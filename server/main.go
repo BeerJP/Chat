@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,13 +19,14 @@ func Database() *gorm.DB {
 	dns := "root:@tcp(127.0.0.1)/full-stack-chat?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dns), &gorm.Config{})
 	if err != nil {
-		fmt.Println("failed to connect to database")
+		panic(err)
 	}
 	db.AutoMigrate(&Message{})
 	return db
 }
 
 func main() {
+
 	db := Database()
 	server := fiber.New()
 	server.Use(cors.New(cors.Config{
@@ -53,4 +53,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 }
