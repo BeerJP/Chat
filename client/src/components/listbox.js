@@ -1,4 +1,4 @@
-import * as React from "react";
+import { React, useMemo } from "react";
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -16,7 +16,7 @@ function Listbox() {
         },
     ]
 
-    const renderedText = React.useMemo(() => {
+    const renderedText = useMemo(() => {
         return text.map((item, index) => (
             <Stack sspacing={2} direction="row" alignItems="center" justifyContent={"space-between"} sx={{ my: 1, px: 1 }}>
                 <Typography noWrap key={index} sx={{ fontSize: 14, pl: 2 }} color="black">
@@ -31,7 +31,7 @@ function Listbox() {
 
     return (
         <>
-            <Card sx={{ width: 'auto', maxWidth: 200, overflow: 'auto' }}>
+            <Card sx={{ width: 'auto', height: '100%', overflow: 'auto' }}>
                 {renderedText}
             </Card>
         </>

@@ -1,29 +1,36 @@
-import * as React from "react";
-import CssBaseline from '@mui/material/CssBaseline';
+import { React, Fragment } from "react";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Textbox from "../components/textbox";
 import Listbox from "../components/listbox";
+import Inputbox from "../components/inputbox";
 
 
 function Chatpage() {
     return ( 
         <>
-            <React.Fragment>
-            <CssBaseline />
+            <Fragment>
                 <Container maxWidth="md">
                     <Box m={1} sx={{ 
-                            bgcolor: '#cfe8fc', 
+                            bgcolor: 'red', 
                             height: '95vh', 
                             borderRadius: 1,
                             display: 'grid', 
-                            gridTemplateColumns: '10fr 3fr',
+                            gridTemplateColumns: 'repeat(4, 1fr)',
+                            gap: 0.3,
+                            gridTemplateRows: '1fr',
+                            gridTemplateAreas: 
+                            `
+                                "main main main sidebar"
+                                "footer footer footer footer"
+                            `
                         }} >
-                        <Textbox/>
-                        <Listbox/>
+                        <Box sx={{ gridArea: 'main' }}><Textbox/></Box>
+                        <Box sx={{ gridArea: 'sidebar' }}><Listbox/></Box>
+                        <Box sx={{ gridArea: 'footer' }}><Inputbox/></Box>
                     </Box>
                 </Container>
-            </React.Fragment>
+            </Fragment>
         </>
      );
 }

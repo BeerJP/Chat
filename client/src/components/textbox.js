@@ -1,4 +1,4 @@
-import * as React from "react";
+import { React, useMemo } from "react";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -39,7 +39,7 @@ function Textbox() {
         },
     ]
 
-    const renderedText = React.useMemo(() => {
+    const renderedText = useMemo(() => {
         return text.map((item, index) => (
             <Typography key={index} sx={{ fontSize: 14 }} color="black">
                 {item.time} : {item.name} : {item.word}
@@ -49,7 +49,8 @@ function Textbox() {
 
     return (
         <>
-            <Card sx={{ width: '100%', minWidth: 250, overflow: 'auto' }}>
+            <Card sx={{ width: '100%', height: '100%', overflowY: 'scroll',
+                }}>
                 <CardContent>
                     {renderedText}
                 </CardContent>
