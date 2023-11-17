@@ -41,29 +41,37 @@ function Chatpage() {
         <>
             <Fragment>
                 <Container maxWidth="md">
-                    <Box m={1} sx={{ 
-                            bgcolor: 'red', 
+                    <Box sx={{ 
                             height: '95vh', 
                             borderRadius: 1,
-                            display: 'grid', 
-                            gridTemplateColumns: 'repeat(4, 1fr)',
-                            gap: 0.3,
-                            gridTemplateRows: '1fr',
-                            gridTemplateAreas: 
-                            `
-                                "main main main sidebar"
-                                "footer footer footer footer"
-                            `
+                            display: "flex",
+                            justifyContent: 'center',
+                            alignItems: 'center',
                         }} >
-                        <Box sx={{ gridArea: 'main' }}>
-                            <Textbox message={isMessage}/>
-                        </Box>
-                        <Box sx={{ gridArea: 'sidebar' }}>
-                            <Listbox/>
-                        </Box>
-                        <Box sx={{ gridArea: 'footer' }}>
-                            <Inputbox sendMessage={sendMessage}/>
-                        </Box>
+                            <Box m={1} sx={{
+                                    boxShadow: 3,
+                                    height: 500,
+                                    width: '100%',
+                                    display: 'grid', 
+                                    gridTemplateColumns: 'repeat(4, 1fr)',
+                                    gap: 0.2,
+                                    gridTemplateRows: '1fr',
+                                    gridTemplateAreas: 
+                                    `
+                                        "main main main sidebar"
+                                        "footer footer footer footer"
+                                    `
+                                }}>
+                                <Box sx={{ gridArea: 'main' }}>
+                                    <Textbox message={isMessage}/>
+                                </Box>
+                                <Box sx={{ gridArea: 'sidebar' }}>
+                                    <Listbox/>
+                                </Box>
+                                <Box sx={{ gridArea: 'footer' }}>
+                                    <Inputbox sendMessage={sendMessage}/>
+                                </Box>
+                            </Box>
                     </Box>
                 </Container>
             </Fragment>

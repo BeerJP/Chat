@@ -27,7 +27,7 @@ function Textbox({ message }) {
 
     const renderedText = useMemo(() => {
         return isChat.map((item, index) => (
-            <Typography key={index} sx={{ fontSize: 14 }} color="black">
+            <Typography key={index} sx={{ fontSize: 14 }} color="white">
                 {item.createdAt} : {item.name} : {item.text}
             </Typography>
         ));
@@ -35,7 +35,7 @@ function Textbox({ message }) {
 
     return (
         <>
-            <Card sx={{ width: '100%', height: '100%', overflowY: 'scroll',
+            <Card sx={{ width: '100%', height: '100%', overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)',
                 }}>
                 <CardContent>
                     {renderedText}

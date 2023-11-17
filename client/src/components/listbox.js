@@ -19,7 +19,7 @@ function Listbox() {
     // const renderedText = useMemo(() => {
     //     return text.map((item, index) => (
     //         <Stack key={index} sspacing={2} direction="row" alignItems="center" justifyContent={"space-between"} sx={{ my: 1, px: 1 }}>
-    //             <Typography noWrap sx={{ fontSize: 14, pl: 2 }} color="black">
+    //             <Typography noWrap sx={{ fontSize: 14, pl: 2 }} color="white">
     //                 {item.name}
     //             </Typography>
     //             <Avatar sx={{ width: 24, height: 24, mx: 1 }}>
@@ -31,7 +31,7 @@ function Listbox() {
 
     return (
         <>
-            <Card sx={{ width: 'auto', height: '100%', overflow: 'auto' }}>
+            <Card sx={{ width: 'auto', height: '100%', overflow: 'auto', background: 'rgba(0, 0, 0, 0.7)' }}>
                 {/* {renderedText} */}
             </Card>
         </>
