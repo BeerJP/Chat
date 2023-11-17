@@ -1,10 +1,16 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/websocket/v2"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -13,6 +19,12 @@ type Message struct {
 	Name      string    `json:"name"`
 	Text      string    `json:"text"`
 	CreatedAt time.Time `json:"createdAt"`
+}
+
+type MessageResponse struct {
+	Name      string `json:"name"`
+	Text      string `json:"text"`
+	CreatedAt string `json:"createdAt"`
 }
 
 func Database() *gorm.DB {
@@ -36,22 +48,107 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	server.Get("/chat", func(c *fiber.Ctx) error {
+	// server.Post("/chat/add", func(c *fiber.Ctx) error {
+	// 	var message Message
+	// 	if err := c.BodyParser(&message); err != nil {
+	// 		return err
+	// 	}
+	// 	result := db.Create(&message)
+	// 	if result.Error != nil {
+	// 		return c.Status(fiber.StatusInternalServerError).SendString(result.Error.Error())
+	// 	}
+	// 	return c.SendString("Success")
+	// })
+
+	server.Get("/chat/get", func(c *fiber.Ctx) error {
 		var messages []Message
 		result := db.Find(&messages)
 		if result.Error != nil {
 			return c.Status(fiber.StatusInternalServerError).SendString(result.Error.Error())
 		}
-		return c.JSON(messages)
+		var response []MessageResponse
+		for _, m := range messages {
+			response = append(response, MessageResponse{
+				Name:      m.Name,
+				Text:      m.Text,
+				CreatedAt: m.CreatedAt.Format("2006-01-02 15:04:05"),
+			})
+		}
+		return c.JSON(response)
 	})
 
-	server.Post("/message", func(c *fiber.Ctx) error {
-		return c.SendString("Success")
-	})
+	server.Get("/chat/websocket", websocket.New(func(c *websocket.Conn) {
+		defer c.Close()
+		for {
+			var message Message
+			if err := c.ReadJSON(&message); err != nil {
+				log.Println("read:", err)
+				break
+			}
+
+			result := db.Create(&Message{
+				Name: message.Name,
+				Text: message.Text,
+			})
+			if result.Error != nil {
+				log.Println("database error:", result.Error)
+				break
+			}
+
+			response := MessageResponse{
+				Name:      message.Name,
+				Text:      message.Text,
+				CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
+			}
+
+			jsonData, err := json.Marshal(response)
+			if err != nil {
+				log.Println("json marshal error:", err)
+				break
+			}
+
+			if err := c.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+				log.Println("write:", err)
+				break
+			}
+		}
+	}))
+
+	// server.Get("/chat/ws", websocket.New(func(c *websocket.Conn) {
+	// 	defer c.Close()
+	// 	for {
+	// 		mt, msg, err := c.ReadMessage()
+	// 		if err != nil {
+	// 			log.Println("read:", err)
+	// 			break
+	// 		}
+	// 		var message Message
+	// 		message.Text = string(msg)
+	// 		result := db.Create(&message)
+	// 		if result.Error != nil {
+	// 			log.Println("failed to save message:", result.Error.Error())
+	// 			break
+	// 		}
+	// 		err = c.WriteMessage(mt, msg)
+	// 		if err != nil {
+	// 			log.Println("write:", err)
+	// 			break
+	// 		}
+	// 	}
+	// }))
 
 	err := server.Listen(":8000")
 	if err != nil {
 		panic(err)
 	}
 
+	ch := make(chan os.Signal, 1)
+	signal.Notify(ch, os.Interrupt)
+	<-ch
+
+	fmt.Println("\nShutting down server...")
+	if err := server.Shutdown(); err != nil {
+		fmt.Println("Server shutdown error:", err)
+	}
+	fmt.Println("Server exiting")
 }

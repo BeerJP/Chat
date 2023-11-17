@@ -9,6 +9,7 @@ require (
 	github.com/gofiber/contrib/websocket v1.2.2 // indirect
 	github.com/gofiber/fiber/v2 v2.51.0 // indirect
 	github.com/gofiber/utils v0.0.10 // indirect
+	github.com/gofiber/websocket/v2 v2.2.1 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

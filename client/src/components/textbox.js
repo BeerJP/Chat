@@ -1,51 +1,37 @@
-import { React, useMemo } from "react";
+import { React, useMemo, useState, useEffect } from "react";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import { fetchData } from '../api/apiFunctions.js';
 
 
-function Textbox() {
+function Textbox({ message }) {
 
-    const text = [
-        { 
-            time: '20:41',
-            name: 'Beer',
-            word: 'Hello !'
-        },
-        { 
-            time: '20:42',
-            name: 'Noyna',
-            word: 'Hello :)'
-        },
-        { 
-            time: '20:42',
-            name: 'Beer',
-            word: 'How are you'
-        },
-        { 
-            time: '20:42',
-            name: 'Noyna',
-            word: 'Good, are you'
-        },
-        { 
-            time: '20:43',
-            name: 'Beer',
-            word: 'Good'
-        },
-        { 
-            time: '20:43',
-            name: 'Noyna',
-            word: 'What would we do'
-        },
-    ]
+    const [isChat, setChat] = useState([]);
+
+    useEffect(() => {
+        fetchData().then(data => {
+            setChat(data);
+        }).catch(error => {
+            console.error(error);
+        });
+    }, []);
+
+    useEffect(() => {
+        try {
+            setChat(prevChat => prevChat.concat(message));
+          } catch (error) {
+            console.error('Invalid JSON data:', error);
+          }
+    }, [message]);
 
     const renderedText = useMemo(() => {
-        return text.map((item, index) => (
+        return isChat.map((item, index) => (
             <Typography key={index} sx={{ fontSize: 14 }} color="black">
-                {item.time} : {item.name} : {item.word}
+                {item.createdAt} : {item.name} : {item.text}
             </Typography>
         ));
-    }, [text]);
+    }, [isChat]);
 
     return (
         <>
@@ -57,6 +43,6 @@ function Textbox() {
             </Card>
         </>
      );
-}
+};
 
 export default Textbox;

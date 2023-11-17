@@ -3,7 +3,7 @@ import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
 
 
-function Inputbox() {
+function Inputbox({ sendMessage }) {
 
     const [isText, setText] = useState('');
 
@@ -13,6 +13,12 @@ function Inputbox() {
 
     const handleEnter = (event) => {
         if (event.key === 'Enter') {
+            const payload = {
+                "name": "Beer",
+                "text": isText,
+            }
+            const jsonString = JSON.stringify(payload);
+            sendMessage(jsonString);
             setText('');
         }
     }
