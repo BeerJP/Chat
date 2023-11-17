@@ -22,9 +22,10 @@ type Message struct {
 }
 
 type MessageResponse struct {
-	Name      string `json:"name"`
-	Text      string `json:"text"`
-	CreatedAt string `json:"createdAt"`
+	Name string `json:"name"`
+	Text string `json:"text"`
+	Date string `json:"date"`
+	Time string `json:"time"`
 }
 
 func Database() *gorm.DB {
@@ -48,6 +49,8 @@ func main() {
 		AllowCredentials: true,
 	}))
 
+	connections := make(map[*websocket.Conn]bool)
+
 	// server.Post("/chat/add", func(c *fiber.Ctx) error {
 	// 	var message Message
 	// 	if err := c.BodyParser(&message); err != nil {
@@ -69,9 +72,10 @@ func main() {
 		var response []MessageResponse
 		for _, m := range messages {
 			response = append(response, MessageResponse{
-				Name:      m.Name,
-				Text:      m.Text,
-				CreatedAt: m.CreatedAt.Format("2006-01-02 15:04:05"),
+				Name: m.Name,
+				Text: m.Text,
+				Date: m.CreatedAt.Format("2006-01-02"),
+				Time: m.CreatedAt.Format("15:04"),
 			})
 		}
 		return c.JSON(response)
@@ -79,6 +83,8 @@ func main() {
 
 	server.Get("/chat/websocket", websocket.New(func(c *websocket.Conn) {
 		defer c.Close()
+		connections[c] = true
+		defer delete(connections, c)
 		for {
 			var message Message
 			if err := c.ReadJSON(&message); err != nil {
@@ -96,9 +102,10 @@ func main() {
 			}
 
 			response := MessageResponse{
-				Name:      message.Name,
-				Text:      message.Text,
-				CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
+				Name: message.Name,
+				Text: message.Text,
+				Date: time.Now().Format("2006-01-02"),
+				Time: time.Now().Format("15:04"),
 			}
 
 			jsonData, err := json.Marshal(response)
@@ -107,35 +114,16 @@ func main() {
 				break
 			}
 
-			if err := c.WriteMessage(websocket.TextMessage, jsonData); err != nil {
-				log.Println("write:", err)
-				break
+			for conn := range connections {
+				if conn != nil {
+					if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+						log.Println("write:", err)
+						break
+					}
+				}
 			}
 		}
 	}))
-
-	// server.Get("/chat/ws", websocket.New(func(c *websocket.Conn) {
-	// 	defer c.Close()
-	// 	for {
-	// 		mt, msg, err := c.ReadMessage()
-	// 		if err != nil {
-	// 			log.Println("read:", err)
-	// 			break
-	// 		}
-	// 		var message Message
-	// 		message.Text = string(msg)
-	// 		result := db.Create(&message)
-	// 		if result.Error != nil {
-	// 			log.Println("failed to save message:", result.Error.Error())
-	// 			break
-	// 		}
-	// 		err = c.WriteMessage(mt, msg)
-	// 		if err != nil {
-	// 			log.Println("write:", err)
-	// 			break
-	// 		}
-	// 	}
-	// }))
 
 	err := server.Listen(":8000")
 	if err != nil {

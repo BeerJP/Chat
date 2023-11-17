@@ -42,8 +42,10 @@ function Chatpage() {
             <Fragment>
                 <Container maxWidth="md">
                     <Box sx={{ 
-                            height: '95vh', 
+                            height: '100vh',
+                            width: 'auto',
                             borderRadius: 1,
+                            margin: 0,
                             display: "flex",
                             justifyContent: 'center',
                             alignItems: 'center',
@@ -56,11 +58,25 @@ function Chatpage() {
                                     gridTemplateColumns: 'repeat(4, 1fr)',
                                     gap: 0.2,
                                     gridTemplateRows: '1fr',
-                                    gridTemplateAreas: 
-                                    `
-                                        "main main main sidebar"
-                                        "footer footer footer footer"
-                                    `
+                                    gridTemplateAreas: {
+                                        xs:
+                                        `
+                                            "main main main main"
+                                            "footer footer footer footer"
+                                        `,
+                                        sm:
+                                        `
+                                            "main main main main"
+                                            "footer footer footer footer"
+                                        `,
+                                        lg:
+                                        `
+                                            "main main main sidebar"
+                                            "footer footer footer footer"
+                                        `,
+
+                                    }
+
                                 }}>
                                 <Box sx={{ gridArea: 'main' }}>
                                     <Textbox message={isMessage}/>

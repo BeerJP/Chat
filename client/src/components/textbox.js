@@ -1,4 +1,4 @@
-import { React, useMemo, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -8,10 +8,14 @@ import { fetchData } from '../api/apiFunctions.js';
 function Textbox({ message }) {
 
     const [isChat, setChat] = useState([]);
+    const [isKeys, setKeys] = useState(0);
+    const chatContainerRef = useRef(null);
 
     useEffect(() => {
         fetchData().then(data => {
             setChat(data);
+            setKeys(Object.keys(data).length);
+            scrollToBottom();
         }).catch(error => {
             console.error(error);
         });
@@ -20,29 +24,46 @@ function Textbox({ message }) {
     useEffect(() => {
         try {
             setChat(prevChat => prevChat.concat(message));
-          } catch (error) {
+            setKeys(prevKeys => prevKeys + 1);
+        } catch (error) {
             console.error('Invalid JSON data:', error);
-          }
+        }
     }, [message]);
 
-    const renderedText = useMemo(() => {
-        return isChat.map((item, index) => (
-            <Typography key={index} sx={{ fontSize: 14 }} color="white">
-                {item.createdAt} : {item.name} : {item.text}
-            </Typography>
-        ));
-    }, [isChat]);
+    useEffect(() => {
+        scrollToBottom();
+    }, [isKeys]);
+
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+        }
+    };
 
     return (
-        <>
-            <Card sx={{ width: '100%', height: '100%', overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)',
-                }}>
-                <CardContent>
-                    {renderedText}
-                </CardContent>
-            </Card>
-        </>
-     );
+        <Card sx={{ width: '100%', height: 420, overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)' }}>
+            <div ref={chatContainerRef}>
+                {isChat.map((item, index) => (
+                    <div key={index}>
+                        <CardContent sx={{ mx: 1 }}>
+                            <Typography color="lightgrey" sx={{ 
+                                    fontSize: 10, 
+                                    mb: 1, 
+                                    display: 'flex', 
+                                    justifyContent: 'space-between' 
+                                }}>
+                                <span>{item.name}</span>
+                                <span>{item.time} : {item.date}</span>
+                            </Typography>
+                            <Typography sx={{ fontSize: 14, width: '85%', wordWrap: 'break-word' }} color="white">
+                                <span>{item.text}</span>
+                            </Typography>
+                        </CardContent>
+                    </div>
+                ))}
+            </div>
+        </Card>
+    );
 };
 
 export default Textbox;

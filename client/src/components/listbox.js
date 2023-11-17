@@ -31,7 +31,7 @@ function Listbox() {
 
     return (
         <>
-            <Card sx={{ width: 'auto', height: '100%', overflow: 'auto', background: 'rgba(0, 0, 0, 0.7)' }}>
+            <Card sx={{ width: 'auto', height: 420, overflow: 'auto', background: 'rgba(0, 0, 0, 0.7)' }}>
                 {/* {renderedText} */}
             </Card>
         </>

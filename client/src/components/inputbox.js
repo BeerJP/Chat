@@ -16,7 +16,7 @@ function Inputbox({ sendMessage }) {
 
     const sendPayload = () => {
         const payload = {
-            "name": "Beer",
+            "name": "Guest",
             "text": isText,
         }
         const jsonString = JSON.stringify(payload);
@@ -47,13 +47,13 @@ function Inputbox({ sendMessage }) {
                 <TextField
                 id="outlined-basic"
                 variant="outlined"
-                autoFocus
                 placeholder="Message..."
                 value={isText}
                 onChange={handleChange}
                 onKeyDown={handleEnter}
                 sx={{
                     input: { color: 'white', fontSize: 14, },
+                    wordWrap: 'break-word'
                 }}
                 />
                 <Button variant="outlined" onClick={sendPayload} sx={{ 
