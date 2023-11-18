@@ -49,19 +49,19 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	connections := make(map[*websocket.Conn]bool)
+	websocketConnections := make(map[*websocket.Conn]bool)
 
-	// server.Post("/chat/add", func(c *fiber.Ctx) error {
-	// 	var message Message
-	// 	if err := c.BodyParser(&message); err != nil {
-	// 		return err
-	// 	}
-	// 	result := db.Create(&message)
-	// 	if result.Error != nil {
-	// 		return c.Status(fiber.StatusInternalServerError).SendString(result.Error.Error())
-	// 	}
-	// 	return c.SendString("Success")
-	// })
+	server.Post("/chat/add", func(c *fiber.Ctx) error {
+		var message Message
+		if err := c.BodyParser(&message); err != nil {
+			return err
+		}
+		result := db.Create(&message)
+		if result.Error != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString(result.Error.Error())
+		}
+		return c.SendString("Success")
+	})
 
 	server.Get("/chat/get", func(c *fiber.Ctx) error {
 		var messages []Message
@@ -83,8 +83,8 @@ func main() {
 
 	server.Get("/chat/websocket", websocket.New(func(c *websocket.Conn) {
 		defer c.Close()
-		connections[c] = true
-		defer delete(connections, c)
+		websocketConnections[c] = true
+		defer delete(websocketConnections, c)
 		for {
 			var message Message
 			if err := c.ReadJSON(&message); err != nil {
@@ -92,14 +92,16 @@ func main() {
 				break
 			}
 
-			result := db.Create(&Message{
-				Name: message.Name,
-				Text: message.Text,
-			})
-			if result.Error != nil {
-				log.Println("database error:", result.Error)
-				break
-			}
+			go func(msg Message) {
+				result := db.Create(&Message{
+					Name: msg.Name,
+					Text: msg.Text,
+				})
+				if result.Error != nil {
+					log.Println("database error:", result.Error)
+					return
+				}
+			}(message)
 
 			response := MessageResponse{
 				Name: message.Name,
@@ -114,7 +116,7 @@ func main() {
 				break
 			}
 
-			for conn := range connections {
+			for conn := range websocketConnections {
 				if conn != nil {
 					if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
 						log.Println("write:", err)
@@ -134,9 +136,7 @@ func main() {
 	signal.Notify(ch, os.Interrupt)
 	<-ch
 
-	fmt.Println("\nShutting down server...")
 	if err := server.Shutdown(); err != nil {
 		fmt.Println("Server shutdown error:", err)
 	}
-	fmt.Println("Server exiting")
 }

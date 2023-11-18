@@ -15,13 +15,15 @@ function Inputbox({ sendMessage }) {
     };
 
     const sendPayload = () => {
-        const payload = {
-            "name": "Guest",
-            "text": isText,
+        if (isText){
+            const payload = {
+                "name": 'Guest',
+                "text": isText,
+            }
+            const jsonString = JSON.stringify(payload);
+            sendMessage(jsonString);
+            setText('');
         }
-        const jsonString = JSON.stringify(payload);
-        sendMessage(jsonString);
-        setText('');
     }
 
     const handleEnter = (event) => {
@@ -56,7 +58,7 @@ function Inputbox({ sendMessage }) {
                     wordWrap: 'break-word'
                 }}
                 />
-                <Button variant="outlined" onClick={sendPayload} sx={{ 
+                <Button onClick={sendPayload} sx={{ 
                         m: 1, 
                         borderRadius: 50, 
                         height: 62,

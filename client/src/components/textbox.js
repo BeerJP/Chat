@@ -1,6 +1,7 @@
 import { React, useState, useEffect, useRef } from "react";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
 import { fetchData } from '../api/apiFunctions.js';
 
@@ -13,9 +14,10 @@ function Textbox({ message }) {
 
     useEffect(() => {
         fetchData().then(data => {
-            setChat(data);
-            setKeys(Object.keys(data).length);
-            scrollToBottom();
+            if (data) {
+                setChat(data);
+                scrollToBottom();
+            }
         }).catch(error => {
             console.error(error);
         });
@@ -36,7 +38,7 @@ function Textbox({ message }) {
 
     const scrollToBottom = () => {
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+            chatContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
     };
 
@@ -45,20 +47,26 @@ function Textbox({ message }) {
             <div ref={chatContainerRef}>
                 {isChat.map((item, index) => (
                     <div key={index}>
-                        <CardContent sx={{ mx: 1 }}>
-                            <Typography color="lightgrey" sx={{ 
-                                    fontSize: 10, 
-                                    mb: 1, 
-                                    display: 'flex', 
-                                    justifyContent: 'space-between' 
-                                }}>
-                                <span>{item.name}</span>
-                                <span>{item.time} : {item.date}</span>
-                            </Typography>
-                            <Typography sx={{ fontSize: 14, width: '85%', wordWrap: 'break-word' }} color="white">
-                                <span>{item.text}</span>
-                            </Typography>
-                        </CardContent>
+                        <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
+                            <CardContent sx={{ mx: 1 }}>
+                                <Typography color="lightgrey" sx={{ 
+                                        fontSize: 10, 
+                                        mb: 1, 
+                                        display: 'flex', 
+                                        justifyContent: 'space-between' 
+                                    }}>
+                                    <span>{item.name}</span>
+                                    <span>{item.time} : {item.date}</span>
+                                </Typography>
+                                <Typography color="white" sx={{ 
+                                        fontSize: 14, 
+                                        width: '85%', 
+                                        wordWrap: 'break-word' 
+                                    }}>
+                                    <span>{item.text}</span>
+                                </Typography>
+                            </CardContent>
+                        </Grow>
                     </div>
                 ))}
             </div>

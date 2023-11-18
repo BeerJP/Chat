@@ -1,9 +1,9 @@
-import { React, Fragment, useEffect, useState } from "react";
+import { React, useEffect, useState } from "react";
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Textbox from "../components/textbox";
-import Listbox from "../components/listbox";
+import Grow from '@mui/material/Grow';
 import Inputbox from "../components/inputbox";
+import Listbox from "../components/listbox";
+import Textbox from "../components/textbox";
 import { webSocket } from '../api/webSocket.js';
 
 
@@ -39,58 +39,56 @@ function Chatpage() {
 
     return ( 
         <>
-            <Fragment>
-                <Container maxWidth="md">
-                    <Box sx={{ 
-                            height: '100vh',
-                            width: 'auto',
-                            borderRadius: 1,
-                            margin: 0,
-                            display: "flex",
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }} >
-                            <Box m={1} sx={{
-                                    boxShadow: 3,
-                                    height: 500,
-                                    width: '100%',
-                                    display: 'grid', 
-                                    gridTemplateColumns: 'repeat(4, 1fr)',
-                                    gap: 0.2,
-                                    gridTemplateRows: '1fr',
-                                    gridTemplateAreas: {
-                                        xs:
-                                        `
-                                            "main main main main"
-                                            "footer footer footer footer"
-                                        `,
-                                        sm:
-                                        `
-                                            "main main main main"
-                                            "footer footer footer footer"
-                                        `,
-                                        lg:
-                                        `
-                                            "main main main sidebar"
-                                            "footer footer footer footer"
-                                        `,
+            <Grow in={true} timeout={500} style={{ transformOrigin: '1 1 1' }}>
+                <Box sx={{ 
+                        height: '100vh',
+                        width: 'auto',
+                        borderRadius: 1,
+                        margin: 0,
+                        display: "flex",
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }} >
+                    <Box m={1} sx={{
+                            boxShadow: 3,
+                            height: 500,
+                            width: '100%',
+                            display: 'grid', 
+                            gridTemplateColumns: 'repeat(4, 1fr)',
+                            gap: 0.2,
+                            gridTemplateRows: '1fr',
+                            gridTemplateAreas: {
+                                xs:
+                                `
+                                    "main main main main"
+                                    "footer footer footer footer"
+                                `,
+                                sm:
+                                `
+                                    "main main main sidebar"
+                                    "footer footer footer footer"
+                                `,
+                                lg:
+                                `
+                                    "main main main sidebar"
+                                    "footer footer footer footer"
+                                `,
 
-                                    }
+                            }
 
-                                }}>
-                                <Box sx={{ gridArea: 'main' }}>
-                                    <Textbox message={isMessage}/>
-                                </Box>
-                                <Box sx={{ gridArea: 'sidebar' }}>
-                                    <Listbox/>
-                                </Box>
-                                <Box sx={{ gridArea: 'footer' }}>
-                                    <Inputbox sendMessage={sendMessage}/>
-                                </Box>
-                            </Box>
+                        }}>
+                        <Box sx={{ gridArea: 'main' }}>
+                            <Textbox message={isMessage}/>
+                        </Box>
+                        <Box sx={{ gridArea: 'sidebar' }}>
+                            <Listbox/>
+                        </Box>
+                        <Box sx={{ gridArea: 'footer' }}>
+                            <Inputbox sendMessage={sendMessage}/>
+                        </Box>
                     </Box>
-                </Container>
-            </Fragment>
+                </Box>
+            </Grow>
         </>
      );
 }

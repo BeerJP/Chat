@@ -36,6 +36,6 @@ function Listbox() {
             </Card>
         </>
      );
-}
+};
 
 export default Listbox;
