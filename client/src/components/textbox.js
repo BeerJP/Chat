@@ -13,9 +13,9 @@ function Textbox({ message }) {
     const chatContainerRef = useRef(null);
 
     useEffect(() => {
-        fetchData().then(data => {
-            if (data) {
-                setChat(data);
+        fetchData().then(response => {
+            if (response) {
+                setChat(response);
                 scrollToBottom();
             }
         }).catch(error => {

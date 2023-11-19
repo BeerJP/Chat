@@ -5,23 +5,44 @@ import Inputbox from "../components/inputbox";
 import Listbox from "../components/listbox";
 import Textbox from "../components/textbox";
 import { webSocket } from '../api/webSocket.js';
+import { getToken } from '../api/apiFunctions.js';
 
 
 function Chatpage() {
 
     const [isWebsocket, setWebsocket] = useState(null);
+    const [isUser, setUser] = useState([]);
     const [isMessage, setMessage] = useState([]);
 
     useEffect(() => {
+        // const token = localStorage.getItem('token');
+        // if (!token) {
+        //     window.location = '/';
+        //     return;
+        // }
+        // getToken(token).then(response => {
+        //     setUser(response);
+        // }).then(() => {
+        //     const ws = webSocket();
+        //     ws.onopen = () => {
+        //         setWebsocket(ws);
+        //     };
+        //     ws.onclose = () => {
+        //         setWebsocket(null);
+        //     };
+        //     ws.onmessage = (event) => {
+        //         setMessage(JSON.parse(event.data));
+        //     };
+        // })
         const ws = webSocket();
-        ws.onopen = () => {
-            setWebsocket(ws);
-        };
-        ws.onclose = () => {
-            setWebsocket(null);
-        };
-        ws.onmessage = (event) => {
-            setMessage(JSON.parse(event.data));
+            ws.onopen = () => {
+                setWebsocket(ws);
+            };
+            ws.onclose = () => {
+                setWebsocket(null);
+            };
+            ws.onmessage = (event) => {
+                setMessage(JSON.parse(event.data));
         };
         return () => {
             if (isWebsocket) {

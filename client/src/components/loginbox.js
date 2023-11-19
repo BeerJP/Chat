@@ -2,6 +2,7 @@ import { React, useState } from "react";
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import { postToken } from '../api/apiFunctions.js';
 
 
 function Loginbox() {
@@ -12,13 +13,21 @@ function Loginbox() {
         setName(event.target.value);
     };
 
-    const submit = () => {
-        setName(isName);
-    };
+        const submitUser = () => {
+            if (isName) {
+                const payload = {
+                    "user": isName,
+                };
+                // postToken(payload).then(response => {
+                //     localStorage.setItem('token', response.token);
+                //     window.location = `/chatroom`;
+                // });
+            };
+        }
 
     const handleEnter = (event) => {
         if (event.key === 'Enter') {
-            submit();
+            submitUser();
         }
     }
 
@@ -37,7 +46,7 @@ function Loginbox() {
                         input: { color: 'white', fontSize: 24, textAlign: 'center' },
                     }}
                     />
-                <Button onClick={submit} sx={{ 
+                <Button onClick={submitUser} sx={{ 
                         height: 50, 
                         color: 'white', 
                         fontSize: 16,
