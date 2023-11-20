@@ -2,9 +2,13 @@ import axios from 'axios';
 
 const baseURL = 'http://127.0.0.1:8000';
 
-export const fetchData = async () => {
+export const fetchData = async (authToken) => {
     try {
-      const response = await axios.get(`${baseURL}/get-all`);
+      const response = await axios.get(`${baseURL}/get-all`, {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
@@ -14,7 +18,7 @@ export const fetchData = async () => {
 
 export const postToken = async (payload) => {
     try {
-      const response = await axios.post(`${baseURL}/add`, payload);
+      const response = await axios.post(`${baseURL}/token-get`, payload);
       return response.data;
     } catch (error) {
       console.error('There was a problem with the post operation:', error);
@@ -24,7 +28,7 @@ export const postToken = async (payload) => {
 
 export const getToken = async (token) => {
   try {
-    const response = await axios.get(`${baseURL}/get`, {
+    const response = await axios.get(`${baseURL}/token-check`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/BeerJP/server/models"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 	"gorm.io/gorm"
 )
@@ -22,6 +23,14 @@ func NewSocket(db *gorm.DB) *Websocket {
 	}
 }
 
+func WebSocketUpgrade(ctx *fiber.Ctx) error {
+	if websocket.IsWebSocketUpgrade(ctx) {
+		ctx.Locals("allowed", true)
+		return ctx.Next()
+	}
+	return fiber.ErrUpgradeRequired
+}
+
 func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 	defer ctx.Close()
 	socket.room[ctx] = true
@@ -32,7 +41,6 @@ func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 			log.Println("read:", err)
 			break
 		}
-
 		go func(msg models.Messages) {
 			result := socket.DB.Create(&models.Messages{
 				Name: msg.Name,
@@ -43,20 +51,17 @@ func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 				return
 			}
 		}(message)
-
 		response := models.MessageResponse{
 			Name: message.Name,
 			Text: message.Text,
 			Date: time.Now().Format("2006-01-02"),
 			Time: time.Now().Format("15:04"),
 		}
-
 		jsonData, err := json.Marshal(response)
 		if err != nil {
 			log.Println("json marshal error:", err)
 			break
 		}
-
 		for conn := range socket.room {
 			if conn != nil {
 				if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {

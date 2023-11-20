@@ -18,10 +18,10 @@ function Loginbox() {
                 const payload = {
                     "user": isName,
                 };
-                // postToken(payload).then(response => {
-                //     localStorage.setItem('token', response.token);
-                //     window.location = `/chatroom`;
-                // });
+                postToken(payload).then(response => {
+                    localStorage.setItem('token', response.token);
+                    window.location = `/chatroom`;
+                });
             };
         }
 

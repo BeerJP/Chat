@@ -6,27 +6,26 @@ import Typography from '@mui/material/Typography';
 import { fetchData } from '../api/apiFunctions.js';
 
 
-function Textbox({ message }) {
+function Textbox({ message, token }) {
 
     const [isChat, setChat] = useState([]);
-    const [isKeys, setKeys] = useState(0);
     const chatContainerRef = useRef(null);
 
     useEffect(() => {
-        fetchData().then(response => {
-            if (response) {
-                setChat(response);
-                scrollToBottom();
-            }
-        }).catch(error => {
-            console.error(error);
-        });
-    }, []);
+        if (token) {
+            fetchData(token).then(response => {
+                if (response) {
+                    setChat(response);
+                }
+            }).catch(error => {
+                console.error(error);
+            });
+        };
+    }, [token]);
 
     useEffect(() => {
         try {
             setChat(prevChat => prevChat.concat(message));
-            setKeys(prevKeys => prevKeys + 1);
         } catch (error) {
             console.error('Invalid JSON data:', error);
         }
@@ -34,18 +33,18 @@ function Textbox({ message }) {
 
     useEffect(() => {
         scrollToBottom();
-    }, [isKeys]);
+    }, [isChat]);
 
     const scrollToBottom = () => {
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            chatContainerRef.current.scrollIntoView({ behavior: 'instant', block: 'end' });
         }
     };
 
     return (
         <Card sx={{ width: '100%', height: 420, overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)' }}>
             <div ref={chatContainerRef}>
-                {isChat.map((item, index) => (
+                {isChat && isChat.map((item, index) => (
                     <div key={index}>
                         <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
                             <CardContent sx={{ mx: 1 }}>

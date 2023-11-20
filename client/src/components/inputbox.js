@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 import Send from "../assets/send.png"
 
 
-function Inputbox({ sendMessage }) {
+function Inputbox({ sendMessage, user }) {
 
     const [isText, setText] = useState('');
 
@@ -17,7 +17,7 @@ function Inputbox({ sendMessage }) {
     const sendPayload = () => {
         if (isText){
             const payload = {
-                "name": 'Guest',
+                "name": user,
                 "text": isText,
             }
             const jsonString = JSON.stringify(payload);

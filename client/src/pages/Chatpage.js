@@ -11,29 +11,27 @@ import { getToken } from '../api/apiFunctions.js';
 function Chatpage() {
 
     const [isWebsocket, setWebsocket] = useState(null);
-    const [isUser, setUser] = useState([]);
     const [isMessage, setMessage] = useState([]);
+    const [isToken, setToken] = useState()
+    const [isUser, setUser] = useState('')
+    console.log(isUser);
 
     useEffect(() => {
-        // const token = localStorage.getItem('token');
-        // if (!token) {
-        //     window.location = '/';
-        //     return;
-        // }
-        // getToken(token).then(response => {
-        //     setUser(response);
-        // }).then(() => {
-        //     const ws = webSocket();
-        //     ws.onopen = () => {
-        //         setWebsocket(ws);
-        //     };
-        //     ws.onclose = () => {
-        //         setWebsocket(null);
-        //     };
-        //     ws.onmessage = (event) => {
-        //         setMessage(JSON.parse(event.data));
-        //     };
-        // })
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location = '/';
+            return;
+        }
+        getToken(token).then(response => {
+            setToken(token);
+            setUser(response.user)
+            console.log(response);
+        }).catch(error => {
+            console.log(error);
+            window.location = '/';
+            return;
+        })
+
         const ws = webSocket();
             ws.onopen = () => {
                 setWebsocket(ws);
@@ -99,13 +97,13 @@ function Chatpage() {
 
                         }}>
                         <Box sx={{ gridArea: 'main' }}>
-                            <Textbox message={isMessage}/>
+                            <Textbox message={isMessage} token={isToken}/>
                         </Box>
                         <Box sx={{ gridArea: 'sidebar' }}>
                             <Listbox/>
                         </Box>
                         <Box sx={{ gridArea: 'footer' }}>
-                            <Inputbox sendMessage={sendMessage}/>
+                            <Inputbox sendMessage={sendMessage} user={isUser}/>
                         </Box>
                     </Box>
                 </Box>
