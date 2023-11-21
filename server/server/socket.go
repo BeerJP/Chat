@@ -27,28 +27,46 @@ func NewSocket(db *gorm.DB) *Websocket {
 func WebSocketUpgrade(ctx *fiber.Ctx) error {
 	if websocket.IsWebSocketUpgrade(ctx) {
 		ctx.Locals("allowed", true)
-		ctx.Locals("user", ctx.Params("id"))
 		return ctx.Next()
 	}
 	return fiber.ErrUpgradeRequired
 }
 
+func sendUserMessage(socket *Websocket, data interface{}) {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Println("json marshal error:", err)
+		return
+	}
+	for conn := range socket.room {
+		if conn != nil {
+			if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
+				log.Println("write:", err)
+				break
+			}
+		}
+	}
+}
+
 func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 	defer ctx.Close()
 
-	name := ctx.Locals("user").(string)
-	name = strings.Trim(name, " :-")
-
-	if name != "" {
-		go func(userName string) {
-			result := socket.DB.Create(&models.Users{
-				Name: userName,
-			})
-			if result.Error != nil {
-				log.Println("database error:", result.Error)
-			}
-		}(name)
+	name := strings.Trim(ctx.Params("id"), ":")
+	if name == "" {
+		return
 	}
+
+	go func() {
+		response := models.Users{
+			State: "1",
+			Name:  name,
+		}
+		if err := socket.DB.Create(&response).Error; err != nil {
+			log.Println("database error:", err)
+			return
+		}
+		sendUserMessage(socket, response)
+	}()
 
 	socket.room[ctx] = true
 
@@ -60,12 +78,11 @@ func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 		}
 
 		go func(msg models.Messages) {
-			result := socket.DB.Create(&models.Messages{
+			if err := socket.DB.Create(&models.Messages{
 				Name: msg.Name,
 				Text: msg.Text,
-			})
-			if result.Error != nil {
-				log.Println("database error:", result.Error)
+			}).Error; err != nil {
+				log.Println("database error:", err)
 				return
 			}
 		}(message)
@@ -76,32 +93,20 @@ func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 			Date: time.Now().Format("2006-01-02"),
 			Time: time.Now().Format("15:04"),
 		}
-
-		jsonData, err := json.Marshal(response)
-		if err != nil {
-			log.Println("json marshal error:", err)
-			break
-		}
-
-		for conn := range socket.room {
-			if conn != nil {
-				if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
-					log.Println("write:", err)
-					break
-				}
-			}
-		}
+		sendUserMessage(socket, response)
 	}
 
-	go func(userName string) {
-		time.Sleep(3 * time.Second)
-		if userName != "" {
-			result := socket.DB.Where("name = ?", userName).Delete(&models.Users{})
-			if result.Error != nil {
-				log.Println("database error:", result.Error)
-			}
+	go func() {
+		response := models.Users{
+			State: "0",
+			Name:  name,
 		}
-	}(name)
+		if err := socket.DB.Where("name = ?", name).Delete(&response).Error; err != nil {
+			log.Println("database error:", err)
+			return
+		}
+		sendUserMessage(socket, response)
+	}()
 
 	delete(socket.room, ctx)
 }

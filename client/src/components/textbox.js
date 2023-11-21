@@ -1,22 +1,26 @@
 import { React, useState, useEffect, useRef } from "react";
+import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
-import { getMessages } from '../api/apiFunctions.js';
+import { getSomeMessages, getAllMessages } from '../api/apiFunctions.js';
 
 
 function Textbox({ message, token }) {
 
+    const [isAll, setAll] = useState(true);
     const [isChat, setChat] = useState([{}]);
     const chatContainerRef = useRef(null);
 
     useEffect(() => {
         if (token) {
-            getMessages(token).then(response => {
+            getSomeMessages(token).then(response => {
                 if (response) {
-                    setChat(response);
+                    return response.reverse();
                 }
+            }).then(response => {
+                setChat(response);
             }).catch(error => {
                 console.error(error);
             });
@@ -41,33 +45,66 @@ function Textbox({ message, token }) {
         }
     };
 
+    const allMessages = () => {
+        if (token) {
+            getAllMessages(token).then(response => {
+                if (response) {
+                    setChat(response);
+                    setAll(false)
+                }
+            }).catch(error => {
+                console.error(error);
+            });
+        };
+    }
+
     return (
         <Card sx={{ width: '100%', height: 420, overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)' }}>
             <div ref={chatContainerRef}>
-                {isChat && isChat.map((item, index) => (
-                    <div key={index}>
-                        <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
-                            <CardContent sx={{ mx: 1 }}>
-                                <Typography color="lightgrey" sx={{ 
-                                        fontSize: 10, 
-                                        mb: 1, 
-                                        display: 'flex', 
-                                        justifyContent: 'space-between' 
-                                    }}>
-                                    <span>{item.name}</span>
-                                    <span>{item.time} : {item.date}</span>
-                                </Typography>
-                                <Typography color="white" sx={{ 
-                                        fontSize: 14, 
-                                        width: '85%', 
-                                        wordWrap: 'break-word' 
-                                    }}>
-                                    <span>{item.text}</span>
-                                </Typography>
-                            </CardContent>
-                        </Grow>
-                    </div>
-                ))}
+                {
+                    isAll ? 
+                    <CardContent sx={{ mx: 1, mb: 0}}>
+                        <Typography color="lightgrey" sx={{ 
+                                mb: 1, 
+                                display: 'flex', 
+                                justifyContent: 'center',
+                                height: 20
+                            }}>
+                            <Button onClick={allMessages} variant="text" sx={{ fontSize: 10, width: '100%' }}>
+                                <span>All Messages</span>
+                            </Button>
+                        </Typography>
+                    </CardContent>
+                    :
+                    <></>
+                }
+                {
+                    isChat && isChat.map((item, index) => (
+                        <div key={index}>
+                            <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
+                                <CardContent sx={{ mx: 1, mb: 0}}>
+                                    <Typography color="lightgrey" sx={{ 
+                                            fontSize: 10, 
+                                            mb: 1, 
+                                            display: 'flex', 
+                                            justifyContent: 'space-between' 
+                                        }}>
+                                        <span>{item.name}</span>
+                                        <span>{item.time} : {item.date}</span>
+                                    </Typography>
+                                    <Typography color="white" sx={{ 
+                                            fontSize: 14, 
+                                            width: '85%', 
+                                            wordWrap: 'break-word',
+                                            mb: 0,
+                                        }}>
+                                        <span>{item.text}</span>
+                                    </Typography>
+                                </CardContent>
+                            </Grow>
+                        </div>
+                    ))
+                }
             </div>
         </Card>
     );

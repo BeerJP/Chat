@@ -11,15 +11,25 @@ func (handler Handler) GetOnUser(ctx *fiber.Ctx) error {
 	if request.Error != nil {
 		return ctx.Status(fiber.StatusInternalServerError).SendString(request.Error.Error())
 	}
-	uniqueUsers := make(map[string]models.Users)
-	for _, user := range user {
-		uniqueUsers[user.Name] = user
+	return ctx.JSON(user)
+}
+
+func (handler Handler) GetMsg_20(ctx *fiber.Ctx) error {
+	var messages []models.Messages
+	request := handler.DB.Order("created_at desc").Limit(20).Find(&messages)
+	if request.Error != nil {
+		return ctx.Status(fiber.StatusInternalServerError).SendString(request.Error.Error())
 	}
-	var uniqueUserList []models.Users
-	for _, user := range uniqueUsers {
-		uniqueUserList = append(uniqueUserList, user)
+	var response []models.MessageResponse
+	for _, m := range messages {
+		response = append(response, models.MessageResponse{
+			Name: m.Name,
+			Text: m.Text,
+			Date: m.CreatedAt.Format("2006-01-02"),
+			Time: m.CreatedAt.Format("15:04"),
+		})
 	}
-	return ctx.JSON(uniqueUserList)
+	return ctx.JSON(response)
 }
 
 func (handler Handler) GetMsgAll(ctx *fiber.Ctx) error {

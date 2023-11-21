@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const baseURL = 'http://127.0.0.1:8000';
 
-export const getMessages = async (authToken) => {
+export const getSomeMessages = async (authToken) => {
     try {
-      const response = await axios.get(`${baseURL}/get-all`, {
+      const response = await axios.get(`${baseURL}/get-some`, {
         headers: {
           'Authorization': `Bearer ${authToken}`,
         },
@@ -13,6 +13,19 @@ export const getMessages = async (authToken) => {
     } catch (error) {
       throw error;
     }
+};
+
+export const getAllMessages = async (authToken) => {
+  try {
+    const response = await axios.get(`${baseURL}/get-all`, {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const getUsers = async (authToken) => {

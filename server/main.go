@@ -23,6 +23,7 @@ func main() {
 	app.Use(jwtware.New(server.TokenMdw()))
 
 	app.Get("/token-check", server.TokenCheck)
+	app.Get("/get-some", hdl.GetMsg_20)
 	app.Get("/get-all", hdl.GetMsgAll)
 	app.Get("/get-user", hdl.GetOnUser)
 
