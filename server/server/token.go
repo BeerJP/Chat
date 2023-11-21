@@ -16,13 +16,13 @@ func TokenMdw() jwtware.Config {
 }
 
 func TokenGet(ctx *fiber.Ctx) error {
-	user := new(models.User)
+	user := new(models.Users)
 	if err := ctx.BodyParser(user); err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 	claims := jwt.MapClaims{
 		"name": user.Name,
-		"exp":  time.Now().Add(time.Hour * 24).Unix(),
+		"exp":  time.Now().Add(time.Hour * 1).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	encoded, err := token.SignedString([]byte("secret"))

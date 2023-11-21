@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/BeerJP/server/models"
@@ -26,6 +27,7 @@ func NewSocket(db *gorm.DB) *Websocket {
 func WebSocketUpgrade(ctx *fiber.Ctx) error {
 	if websocket.IsWebSocketUpgrade(ctx) {
 		ctx.Locals("allowed", true)
+		ctx.Locals("user", ctx.Params("id"))
 		return ctx.Next()
 	}
 	return fiber.ErrUpgradeRequired
@@ -33,14 +35,30 @@ func WebSocketUpgrade(ctx *fiber.Ctx) error {
 
 func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 	defer ctx.Close()
+
+	name := ctx.Locals("user").(string)
+	name = strings.Trim(name, " :-")
+
+	if name != "" {
+		go func(userName string) {
+			result := socket.DB.Create(&models.Users{
+				Name: userName,
+			})
+			if result.Error != nil {
+				log.Println("database error:", result.Error)
+			}
+		}(name)
+	}
+
 	socket.room[ctx] = true
-	defer delete(socket.room, ctx)
+
 	for {
 		var message models.Messages
 		if err := ctx.ReadJSON(&message); err != nil {
 			log.Println("read:", err)
 			break
 		}
+
 		go func(msg models.Messages) {
 			result := socket.DB.Create(&models.Messages{
 				Name: msg.Name,
@@ -51,17 +69,20 @@ func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 				return
 			}
 		}(message)
+
 		response := models.MessageResponse{
 			Name: message.Name,
 			Text: message.Text,
 			Date: time.Now().Format("2006-01-02"),
 			Time: time.Now().Format("15:04"),
 		}
+
 		jsonData, err := json.Marshal(response)
 		if err != nil {
 			log.Println("json marshal error:", err)
 			break
 		}
+
 		for conn := range socket.room {
 			if conn != nil {
 				if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
@@ -71,4 +92,16 @@ func (socket *Websocket) HandlerSocket(ctx *websocket.Conn) {
 			}
 		}
 	}
+
+	go func(userName string) {
+		time.Sleep(3 * time.Second)
+		if userName != "" {
+			result := socket.DB.Where("name = ?", userName).Delete(&models.Users{})
+			if result.Error != nil {
+				log.Println("database error:", result.Error)
+			}
+		}
+	}(name)
+
+	delete(socket.room, ctx)
 }

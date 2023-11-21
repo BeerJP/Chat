@@ -5,6 +5,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+func (handler Handler) GetOnUser(ctx *fiber.Ctx) error {
+	var user []models.Users
+	request := handler.DB.Find(&user).Group("name")
+	if request.Error != nil {
+		return ctx.Status(fiber.StatusInternalServerError).SendString(request.Error.Error())
+	}
+	uniqueUsers := make(map[string]models.Users)
+	for _, user := range user {
+		uniqueUsers[user.Name] = user
+	}
+	var uniqueUserList []models.Users
+	for _, user := range uniqueUsers {
+		uniqueUserList = append(uniqueUserList, user)
+	}
+	return ctx.JSON(uniqueUserList)
+}
+
 func (handler Handler) GetMsgAll(ctx *fiber.Ctx) error {
 	var messages []models.Messages
 	request := handler.DB.Find(&messages)

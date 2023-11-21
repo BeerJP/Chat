@@ -3,17 +3,17 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
-import { fetchData } from '../api/apiFunctions.js';
+import { getMessages } from '../api/apiFunctions.js';
 
 
 function Textbox({ message, token }) {
 
-    const [isChat, setChat] = useState([]);
+    const [isChat, setChat] = useState([{}]);
     const chatContainerRef = useRef(null);
 
     useEffect(() => {
         if (token) {
-            fetchData(token).then(response => {
+            getMessages(token).then(response => {
                 if (response) {
                     setChat(response);
                 }
