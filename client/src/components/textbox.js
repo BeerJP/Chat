@@ -4,23 +4,30 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
-import { getSomeMessages, getAllMessages } from '../api/apiFunctions.js';
+import { getMessages } from '../api/apiFunctions.js';
 
 
 function Textbox({ message, token }) {
 
-    const [isAll, setAll] = useState(true);
-    const [isChat, setChat] = useState([{}]);
+    const [showAllMessages, setShowAllMessages] = useState(true);
+    const [isScroll, setScroll] = useState(true);
+    const [chatMessages, setChatMessages] = useState([{}]);
     const chatContainerRef = useRef(null);
 
     useEffect(() => {
+        if (chatMessages.length > 0) {
+            scrollToBottom();
+        }
+        setScroll(true);
+    }, [chatMessages]);
+
+    useEffect(() => {
         if (token) {
-            getSomeMessages(token).then(response => {
+            getMessages(token, "10").then(response => {
                 if (response) {
-                    return response.reverse();
+                    setChatMessages(response.reverse());
+                    console.log(response)
                 }
-            }).then(response => {
-                setChat(response);
             }).catch(error => {
                 console.error(error);
             });
@@ -28,29 +35,25 @@ function Textbox({ message, token }) {
     }, [token]);
 
     useEffect(() => {
-        try {
-            setChat(prevChat => prevChat.concat(message));
-        } catch (error) {
-            console.error('Invalid JSON data:', error);
-        }
+        setChatMessages(prevChat => prevChat.concat(message));
     }, [message]);
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [isChat]);
-
     const scrollToBottom = () => {
+        if (!isScroll) {
+            return;
+        }
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollIntoView({ behavior: 'instant', block: 'end' });
         }
     };
 
-    const allMessages = () => {
+    const handleShowAllMessages = () => {
+        setScroll(false);
         if (token) {
-            getAllMessages(token).then(response => {
+            getMessages(token, "all").then(response => {
                 if (response) {
-                    setChat(response);
-                    setAll(false)
+                    setChatMessages(response);
+                    setShowAllMessages(false);
                 }
             }).catch(error => {
                 console.error(error);
@@ -62,7 +65,7 @@ function Textbox({ message, token }) {
         <Card sx={{ width: '100%', height: 420, overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)' }}>
             <div ref={chatContainerRef}>
                 {
-                    isAll ? 
+                    showAllMessages ? 
                     <CardContent sx={{ mx: 1, mb: 0}}>
                         <Typography color="lightgrey" sx={{ 
                                 mb: 1, 
@@ -70,7 +73,7 @@ function Textbox({ message, token }) {
                                 justifyContent: 'center',
                                 height: 20
                             }}>
-                            <Button onClick={allMessages} variant="text" sx={{ fontSize: 10, width: '100%' }}>
+                            <Button onClick={handleShowAllMessages} variant="text" sx={{ fontSize: 10, width: '100%' }}>
                                 <span>All Messages</span>
                             </Button>
                         </Typography>
@@ -79,7 +82,7 @@ function Textbox({ message, token }) {
                     <></>
                 }
                 {
-                    isChat && isChat.map((item, index) => (
+                    chatMessages && chatMessages.map((item, index) => (
                         <div key={index}>
                             <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
                                 <CardContent sx={{ mx: 1, mb: 0}}>

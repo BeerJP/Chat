@@ -17,14 +17,13 @@ func main() {
 	wsc := server.NewSocket(hdl.DB)
 
 	app.Post("/token-get", server.TokenGet)
-	app.Use("/ws/:id", server.WebSocketUpgrade)
+	app.Use("/ws", server.WebSocketUpgrade)
 	app.Get("/ws/:id", websocket.New(wsc.HandlerSocket))
 
 	app.Use(jwtware.New(server.TokenMdw()))
 
 	app.Get("/token-check", server.TokenCheck)
-	app.Get("/get-some", hdl.GetMsg_20)
-	app.Get("/get-all", hdl.GetMsgAll)
+	app.Get("/get-msg/:value", hdl.GetMessages)
 	app.Get("/get-user", hdl.GetOnUser)
 
 	app.Listen(":8000")

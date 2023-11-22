@@ -109,7 +109,7 @@ function Chatpage() {
                         <Textbox message={isMessage} token={isToken} />
                     </Box>
                     <Box sx={{ gridArea: 'sidebar' }}>
-                        <Listbox member={isMember} token={isToken}/>
+                        <Listbox member={isMember} token={isToken} user={isUser}/>
                     </Box>
                     <Box sx={{ gridArea: 'footer' }}>
                         <Inputbox sendMessage={sendMessage} user={isUser} />
