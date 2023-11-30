@@ -9,7 +9,7 @@ import { getMessages } from '../api/apiFunctions.js';
 
 function Textbox({ message, token }) {
 
-    const [showAllMessages, setShowAllMessages] = useState(true);
+    const [showAllMessages, setShowAllMessages] = useState(false);
     const [isScroll, setScroll] = useState(true);
     const [chatMessages, setChatMessages] = useState([{}]);
     const chatContainerRef = useRef(null);
@@ -26,7 +26,11 @@ function Textbox({ message, token }) {
             getMessages(token, "10").then(response => {
                 if (response) {
                     setChatMessages(response.reverse());
-                    console.log(response)
+                    if (response.length < 20) {
+                        setShowAllMessages(false)
+                    } else {
+                        setShowAllMessages(true)
+                    }
                 }
             }).catch(error => {
                 console.error(error);
@@ -35,7 +39,9 @@ function Textbox({ message, token }) {
     }, [token]);
 
     useEffect(() => {
-        setChatMessages(prevChat => prevChat.concat(message));
+        if (message) {
+            setChatMessages(prevChat => prevChat.concat(message));
+        }
     }, [message]);
 
     const scrollToBottom = () => {
@@ -82,7 +88,7 @@ function Textbox({ message, token }) {
                     <></>
                 }
                 {
-                    chatMessages && chatMessages.map((item, index) => (
+                    chatMessages[0].text && chatMessages.map((item, index) => (
                         <div key={index}>
                             <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
                                 <CardContent sx={{ mx: 1, mb: 0}}>
