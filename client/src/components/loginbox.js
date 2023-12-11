@@ -2,8 +2,7 @@ import { React, useState } from "react";
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { postToken } from '../api/apiFunctions.js';
-import { regisUser } from '../api/apiFunctions.js';
+import { postToken, regisUser, loginUser } from '../api/apiFunctions.js';
 
 
 function Loginbox() {
@@ -14,52 +13,69 @@ function Loginbox() {
     const [isPass2, setPass2] = useState('');
 
     const handleChange = (event) => {
-        if (event.target.type ==  'text') {
+        if (event.target.type ===  'text') {
             setName(event.target.value);
         }
-        if (event.target.id ==  'outlined password1') {
+        if (event.target.id ===  'outlined password1') {
             setPass1(event.target.value);
         }
-        if (event.target.id ==  'outlined password2') {
+        if (event.target.id ===  'outlined password2') {
             setPass2(event.target.value);
-        }
+        };
     };
 
     const submitUser = (type) => {
-        if (isName && type == "guest") {
+        if (isName && type === "guest") {
             const payload = {
-                "user": isName,
+                "user": "Guest " + isName,
             };
             postToken(payload).then(response => {
                 localStorage.setItem('token', response.token);
                 window.location = `/chatroom`;
             });
-        } else if (isName && isPass1 && type == "user") {
-            console.log("User")
+        } else if (isName && isPass1 && type === "user") {
+            const payload = {
+                "user": isName,
+                "pass": isPass1,
+            };
+            loginUser(payload).then(reponse => {
+                postToken({
+                    "user": reponse
+                }).then(response => {
+                    localStorage.setItem('token', response.token);
+                    window.location = `/chatroom`;
+                });
+            })
         };
     };
 
     const registerUser = () => {
         if (isName && isPass1 && isPass2) {
-            if (isPass1 == isPass2) {
+            if (isPass1 === isPass2) {
                 const payload = {
                     "user": isName,
                     "pass": isPass1,
                 };
                 regisUser(payload).then(reponse => {
-
+                    if (reponse === "Success") {
+                        setCard("user");
+                    } else {
+                        setName("");
+                        setPass1('');
+                        setPass2('');
+                    }
                 })
             } else {
                 setPass1('');
                 setPass2('');
-            }
-        }
+            };
+        };
     };
 
     const handleEnter = (event) => {
         if (event.key === 'Enter') {
             submitUser();
-        }
+        };
     };
 
     const handleClick = (type) => {
@@ -72,7 +88,7 @@ function Loginbox() {
     return (
         <>
             {
-                isCard == "guest" ? 
+                isCard === "guest" ? 
                 <Stack direction="column" spacing={2} sx={{ width: '90%', mt: 2 }}>
                     <TextField
                         id="outlined"
@@ -104,7 +120,7 @@ function Loginbox() {
                     </Button>
                 </Stack>
                 :
-                isCard == "user" ? 
+                isCard === "user" ? 
                 <Stack direction="column" spacing={2} sx={{ width: '90%'}}>
                     <TextField
                         id="outlined username"

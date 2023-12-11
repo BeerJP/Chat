@@ -12,7 +12,14 @@ func (handler Handler) GetOnUser(ctx *fiber.Ctx) error {
 	if request.Error != nil {
 		return ctx.Status(fiber.StatusInternalServerError).SendString(request.Error.Error())
 	}
-	return ctx.JSON(user)
+	var response []models.Users
+	for _, m := range user {
+		response = append(response, models.Users{
+			Name:  m.Name,
+			State: m.State,
+		})
+	}
+	return ctx.JSON(response)
 }
 
 func (handler Handler) GetMessages(ctx *fiber.Ctx) error {

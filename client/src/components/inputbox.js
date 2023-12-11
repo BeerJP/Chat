@@ -19,6 +19,7 @@ function Inputbox({ sendMessage, user }) {
             const payload = {
                 "name": user,
                 "text": isText,
+                "target": "main",
             }
             const jsonString = JSON.stringify(payload);
             sendMessage(jsonString);

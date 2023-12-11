@@ -11,6 +11,15 @@ export const regisUser = async (payload) => {
   }
 };
 
+export const loginUser = async (payload) => {
+  try {
+    const response = await axios.post(`${baseURL}/user-login`, payload);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getMessages = async (authToken, value) => {
   try {
     const response = await axios.get(`${baseURL}/get-msg/${value}`, {

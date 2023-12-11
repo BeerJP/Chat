@@ -9,10 +9,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Up from "../assets/up-arrow.png"
 import Down from "../assets/down-arrow.png"
+import Online from "../assets/green-dot.png"
+import Offline from "../assets/red-dot.png"
 import { getUsers } from '../api/apiFunctions.js';
 
 
-function Listbox({ member, token, user }) {
+function Listbox({ token, user }) {
 
     const [isMember, setMember] = useState([])
     const [isOpen, setOpen] = useState(true)
@@ -28,22 +30,6 @@ function Listbox({ member, token, user }) {
             });
         };
     }, [token]);
-
-    useEffect(() => {
-        if (member.state === '1') {
-            const isDuplicate = isMember.some(item => item.user === member.user);
-            if (!isDuplicate) {
-                setMember(prevMember => {
-                    const updatedMember = [...prevMember, member];
-                    updatedMember.sort((a, b) => a.user.localeCompare(b.user));
-                    return updatedMember;
-                });
-            }
-        } else if (member.state === '0') {
-            const removeMember = isMember.filter(item => item.user !== member.user);
-            setMember(removeMember);
-        }
-    }, [member])
 
     const handleClick = () => {
         setOpen(!isOpen)
@@ -94,28 +80,34 @@ function Listbox({ member, token, user }) {
                                             sx={{ 
                                                 my: 1,
                                                 pt: 1,
-                                                px: 3,
+                                                pb: 1,
+                                                pl: 3,
+                                                pr: 5.5,
+                                                justifyContent: "space-between",
                                             }}>
                                         <Typography noWrap sx={{ fontSize: 12 }} color="white">
                                             {item.user}
                                         </Typography>
+                                        <Avatar sx={{ width: 12, height: 12 }} src={item.state === "1" ? Online : Offline}/>
                                     </Stack >
                                 ))}
-                                <Stack spacing={2} direction="row" 
-                                        alignItems="center"
-                                        sx={{ 
-                                            my: 2,
-                                            pt: 1,
-                                            px: 3,
-                                        }}>
-                                    <Typography noWrap color="white" sx={{ fontSize: 12, fontWeight: 'bolder' }}>
-                                        <span>Guest ( 0 )</span>
-                                    </Typography>
-                                </Stack >
                             </Card>
                         </List>
                     </Collapse>
                 </List>
+                <Card sx={{ width: 'auto', height: 'auto', background: 'rgba(0, 0, 0, 0)' }}>
+                    <Stack spacing={2} direction="row" 
+                            alignItems="center"
+                            sx={{ 
+                                pt: 1,
+                                pb: 1.5,
+                                px: 3,
+                            }}>
+                        <Typography noWrap color="white" sx={{ fontSize: 12, fontWeight: 'bolder' }}>
+                            <span>Guest ( 0 )</span>
+                        </Typography>
+                    </Stack >
+                </Card>
             </Card>
         </>
     );

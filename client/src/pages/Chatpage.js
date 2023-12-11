@@ -9,15 +9,15 @@ import { getToken } from '../api/apiFunctions.js';
 
 
 function Chatpage() {
+
     const [isWebsocket, setWebsocket] = useState(null);
     const [isMessage, setMessage] = useState([{}]);
-    const [isMember, setMember] = useState([{state: ''}]);
     const [isToken, setToken] = useState();
     const [isUser, setUser] = useState('');
 
     useEffect(() => {
         if (isUser !== '') {
-            const ws = webSocket(isUser);
+            const ws = webSocket("main", isUser);
             ws.onopen = () => {
                 setWebsocket(ws);
             };
@@ -27,11 +27,7 @@ function Chatpage() {
             ws.onmessage = (event) => {
                 if(event.data) {
                     var response = JSON.parse(event.data);
-                    if (response.hasOwnProperty('state')) {
-                        setMember(response);
-                    } else {
-                        setMessage(response);
-                    }
+                    setMessage(response);
                 }
             };
             return () => {
@@ -109,7 +105,7 @@ function Chatpage() {
                         <Textbox message={isMessage} token={isToken} />
                     </Box>
                     <Box sx={{ gridArea: 'rightbar' }}>
-                        <Listbox member={isMember} token={isToken} user={isUser}/>
+                        <Listbox token={isToken} user={isUser}/>
                     </Box>
                     <Box sx={{ gridArea: 'footer' }}>
                         <Inputbox sendMessage={sendMessage} user={isUser} />
