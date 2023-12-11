@@ -68,7 +68,7 @@ function Textbox({ message, token }) {
     }
 
     return (
-        <Card sx={{ width: '100%', height: 420, overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)' }}>
+        <Card sx={{ width: '100%', height: '100%', overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)' }}>
             <div ref={chatContainerRef}>
                 {
                     showAllMessages ? 

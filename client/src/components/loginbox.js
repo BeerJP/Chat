@@ -3,59 +3,233 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { postToken } from '../api/apiFunctions.js';
+import { regisUser } from '../api/apiFunctions.js';
 
 
 function Loginbox() {
 
+    const [isCard, setCard] = useState("guest");
     const [isName, setName] = useState('');
+    const [isPass1, setPass1] = useState('');
+    const [isPass2, setPass2] = useState('');
 
     const handleChange = (event) => {
-        setName(event.target.value);
+        if (event.target.type ==  'text') {
+            setName(event.target.value);
+        }
+        if (event.target.id ==  'outlined password1') {
+            setPass1(event.target.value);
+        }
+        if (event.target.id ==  'outlined password2') {
+            setPass2(event.target.value);
+        }
     };
 
-        const submitUser = () => {
-            if (isName) {
+    const submitUser = (type) => {
+        if (isName && type == "guest") {
+            const payload = {
+                "user": isName,
+            };
+            postToken(payload).then(response => {
+                localStorage.setItem('token', response.token);
+                window.location = `/chatroom`;
+            });
+        } else if (isName && isPass1 && type == "user") {
+            console.log("User")
+        };
+    };
+
+    const registerUser = () => {
+        if (isName && isPass1 && isPass2) {
+            if (isPass1 == isPass2) {
                 const payload = {
                     "user": isName,
+                    "pass": isPass1,
                 };
-                postToken(payload).then(response => {
-                    localStorage.setItem('token', response.token);
-                    window.location = `/chatroom`;
-                });
-            };
+                regisUser(payload).then(reponse => {
+
+                })
+            } else {
+                setPass1('');
+                setPass2('');
+            }
         }
+    };
 
     const handleEnter = (event) => {
         if (event.key === 'Enter') {
             submitUser();
         }
-    }
+    };
+
+    const handleClick = (type) => {
+        setCard(type);
+        setName('');
+        setPass1('');
+        setPass2('');
+    };
 
     return (
         <>
-            <Stack direction="column" spacing={2}>
-                <TextField
-                    id="outlined"
-                    label="Name"
-                    color="primary"
-                    focused
-                    value={isName}
-                    onChange={handleChange}
-                    onKeyDown={handleEnter}
-                    sx={{
-                        input: { color: 'white', fontSize: 24, textAlign: 'center' },
-                    }}
-                    />
-                <Button onClick={submitUser} sx={{ 
-                        height: 50, 
-                        color: 'white', 
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        letterSpacing: 3,
-                    }}>
-                    <span>Join</span>
-                </Button>
-            </Stack>
+            {
+                isCard == "guest" ? 
+                <Stack direction="column" spacing={2} sx={{ width: '90%', mt: 2 }}>
+                    <TextField
+                        id="outlined"
+                        label="Name"
+                        color="primary"
+                        focused
+                        value={isName}
+                        onChange={handleChange}
+                        onKeyDown={handleEnter}
+                        sx={{
+                            input: {height: 50, color: 'white', fontSize: 24, textAlign: 'center' },
+                        }}
+                        />
+                    <Button onClick={() => submitUser("guest")} sx={{ 
+                            height: 50, 
+                            color: 'white', 
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            letterSpacing: 2,
+                        }}>
+                        <span>Connect</span>
+                    </Button>
+                    <Button onClick={() => handleClick("user")} sx={{ 
+                            height: 20, 
+                            color: 'white', 
+                            fontSize: 10,
+                        }}>
+                        <span>User Login</span>
+                    </Button>
+                </Stack>
+                :
+                isCard == "user" ? 
+                <Stack direction="column" spacing={2} sx={{ width: '90%'}}>
+                    <TextField
+                        id="outlined username"
+                        label="Username"
+                        color="primary"
+                        focused
+                        value={isName}
+                        onChange={handleChange}
+                        onKeyDown={handleEnter}
+                        sx={{
+                            input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' },
+                        }}
+                        />
+                    <TextField
+                        id="outlined password1"
+                        label="Password"
+                        type="password"
+                        color="primary"
+                        focused
+                        value={isPass1}
+                        onChange={handleChange}
+                        onKeyDown={handleEnter}
+                        sx={{
+                            input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' },
+                        }}
+                        />
+                    <Button onClick={() => submitUser("user")} sx={{ 
+                            height: 50, 
+                            color: 'white', 
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            letterSpacing: 2,
+                        }}>
+                        <span>Login</span>
+                    </Button>
+                    <div>
+                        <Button onClick={() => handleClick("guest")} sx={{ 
+                                height: 20,
+                                width: 155, 
+                                color: 'white', 
+                                fontSize: 10,
+                            }}>
+                            <span>Guest Connect</span>
+                        </Button>
+                        <Button onClick={() => handleClick("register")} sx={{ 
+                                height: 20, 
+                                width: 155,
+                                color: 'white', 
+                                fontSize: 10,
+                            }}>
+                            <span>Register</span>
+                        </Button>
+                    </div>
+                </Stack>
+                :
+                <Stack direction="column" spacing={2} sx={{ width: '90%'}}>
+                    <TextField
+                        id="outlined username"
+                        label="Username"
+                        color="primary"
+                        focused
+                        value={isName}
+                        onChange={handleChange}
+                        onKeyDown={handleEnter}
+                        sx={{
+                            input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' },
+                        }}
+                        />
+                    <Stack direction="row" spacing={2}>
+                        <TextField
+                            id="outlined password1"
+                            label="Password"
+                            type="password"
+                            color="primary"
+                            focused
+                            value={isPass1}
+                            onChange={handleChange}
+                            onKeyDown={handleEnter}
+                            sx={{
+                                input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' },
+                            }}
+                            />
+                        <TextField
+                            id="outlined password2"
+                            label="Confirm Password"
+                            type="password"
+                            color="primary"
+                            focused
+                            value={isPass2}
+                            onChange={handleChange}
+                            onKeyDown={handleEnter}
+                            sx={{
+                                input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' },
+                            }}
+                            />
+                    </Stack>
+                    <Button onClick={registerUser} sx={{ 
+                            height: 50, 
+                            color: 'white', 
+                            fontSize: 16,
+                            fontWeight: 'bold',
+                            letterSpacing: 2,
+                        }}>
+                        <span>Register</span>
+                    </Button>
+                    <div>
+                        <Button onClick={() => handleClick("guest")} sx={{ 
+                                height: 20,
+                                width: 155, 
+                                color: 'white', 
+                                fontSize: 10,
+                            }}>
+                            <span>Guest Connect</span>
+                        </Button>
+                        <Button onClick={() => handleClick("user")} sx={{ 
+                                height: 20, 
+                                width: 155,
+                                color: 'white', 
+                                fontSize: 10,
+                            }}>
+                            <span>Login</span>
+                        </Button>
+                    </div>
+                </Stack>
+            }
         </>
      );
 };

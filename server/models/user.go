@@ -1,6 +1,7 @@
 package models
 
 type Users struct {
-	State string `json:"state"`
-	Name  string `json:"user"`
+	Name     string `json:"user"`
+	Password string `json:"pass"`
+	State    string `json:"state"`
 }

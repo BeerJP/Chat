@@ -16,6 +16,8 @@ func main() {
 	dbc := database.Database()
 	hdl := handlers.Catch(wsc, dbc)
 
+	app.Post("/user-regis", hdl.RegisUser)
+	app.Post("/user-login", hdl.LoginUser)
 	app.Post("/token-get", handlers.TokenGet)
 	app.Use("/ws", handlers.WebSocketUpgrade)
 	app.Get("/ws/:id", websocket.New(hdl.HandlerSocket))
@@ -26,6 +28,6 @@ func main() {
 	app.Get("/get-msg/:value", hdl.GetMessages)
 	app.Get("/get-user", hdl.GetOnUser)
 
-	app.Listen(":8000")
+	app.Listen(":300")
 
 }

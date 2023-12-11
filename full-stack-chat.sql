@@ -20,6 +20,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `messages` (
   `name` longtext DEFAULT NULL,
   `text` longtext DEFAULT NULL,
+  `target` longtext DEFAULT NULL,
   `created_at` datetime(3) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -29,6 +30,7 @@ CREATE TABLE `messages` (
 
 CREATE TABLE `users` (
   `name` longtext DEFAULT NULL,
-  `state` longtext NOT NULL
+  `password` longtext DEFAULT NULL,
+  `state` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 COMMIT;

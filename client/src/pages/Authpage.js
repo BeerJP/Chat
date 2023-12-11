@@ -18,7 +18,7 @@ function Authpage({ user }) {
         }
     })
 
-    return ( 
+    return (
         <>
             <Box sx={{ 
                     height: '100vh',
@@ -31,7 +31,7 @@ function Authpage({ user }) {
                 }} >
                 <Box sx={{
                         width: 350,
-                        height: 220,
+                        height: 300,
                         borderRadius: 1,
                         background: 'rgba(0, 0, 0, 0.2)',
                         display: "flex",

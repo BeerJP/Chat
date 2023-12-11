@@ -1,9 +1,9 @@
 import { React, useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
-import Inputbox from "../components/inputbox";
-import Listbox from "../components/listbox";
-import Textbox from "../components/textbox";
+import Inputbox from "../components/inputbox.js";
+import Listbox from "../components/listbox.js";
+import Textbox from "../components/textbox.js";
 import { webSocket } from '../api/webSocket.js';
 import { getToken } from '../api/apiFunctions.js';
 
@@ -83,7 +83,7 @@ function Chatpage() {
                     m={1}
                     sx={{
                         boxShadow: 3,
-                        height: 500,
+                        height:'80%',
                         width: '100%',
                         display: 'grid',
                         gridTemplateColumns: 'repeat(4, 1fr)',
@@ -95,11 +95,11 @@ function Chatpage() {
                                 "footer footer footer footer"
                             `,
                             sm: `
-                                "main main main sidebar"
+                                "main main main rightbar"
                                 "footer footer footer footer"
                             `,
                             lg: `
-                                "main main main sidebar"
+                                "main main main rightbar"
                                 "footer footer footer footer"
                             `,
                         },
@@ -108,7 +108,7 @@ function Chatpage() {
                     <Box sx={{ gridArea: 'main' }}>
                         <Textbox message={isMessage} token={isToken} />
                     </Box>
-                    <Box sx={{ gridArea: 'sidebar' }}>
+                    <Box sx={{ gridArea: 'rightbar' }}>
                         <Listbox member={isMember} token={isToken} user={isUser}/>
                     </Box>
                     <Box sx={{ gridArea: 'footer' }}>

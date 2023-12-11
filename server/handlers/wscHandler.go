@@ -49,7 +49,7 @@ func (socket Handler) HandlerSocket(ctx *websocket.Conn) {
 			State: "1",
 			Name:  name,
 		}
-		if err := socket.DB.Create(&response).Error; err != nil {
+		if err := socket.DB.Save(&response).Error; err != nil {
 			log.Println("database error:", err)
 			return
 		}

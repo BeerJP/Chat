@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const baseURL = 'http://127.0.0.1:8000';
+const baseURL = 'http://127.0.0.1:300';
+
+export const regisUser = async (payload) => {
+  try {
+    const response = await axios.post(`${baseURL}/user-regis`, payload);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const getMessages = async (authToken, value) => {
   try {
