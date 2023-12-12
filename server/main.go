@@ -25,7 +25,7 @@ func main() {
 
 	app.Get("/token-check", handlers.TokenCheck)
 	app.Get("/get-msg/:value", hdl.GetMessages)
-	app.Get("/get-user", hdl.GetOnUser)
+	app.Get("/get-user", hdl.GetUser)
 
 	app.Listen(":300")
 

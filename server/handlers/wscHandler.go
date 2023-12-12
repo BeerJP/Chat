@@ -99,6 +99,8 @@ func (socket Handler) HandlerSocket(ctx *websocket.Conn) {
 	}
 
 	if len(userName) >= 5 && userName[:5] == " Guest" {
+		log.Println("Guest: Delete")
+	} else {
 		go func() {
 			response := models.Users{
 				Name: userName,

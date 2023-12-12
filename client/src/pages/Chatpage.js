@@ -1,9 +1,9 @@
 import { React, useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
-import Inputbox from "../components/inputbox.js";
-import Listbox from "../components/listbox.js";
-import Textbox from "../components/textbox.js";
+import Inputbox from "../features/inputbox.js";
+import Listbox from "../features/listbox.js";
+import Textbox from "../features/textbox.js";
 import { webSocket } from '../api/webSocket.js';
 import { getToken } from '../api/apiFunctions.js';
 
@@ -64,8 +64,7 @@ function Chatpage() {
 
     return (
         <Grow in={true} timeout={500} style={{ transformOrigin: '1 1 1' }}>
-            <Box
-                sx={{
+            <Box sx={{
                     height: '100vh',
                     width: 'auto',
                     borderRadius: 1,
@@ -73,11 +72,8 @@ function Chatpage() {
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
-                }}
-            >
-                <Box
-                    m={1}
-                    sx={{
+                }}>
+                <Box m={1} sx={{
                         boxShadow: 3,
                         height:'80%',
                         width: '100%',
@@ -87,28 +83,26 @@ function Chatpage() {
                         gridTemplateRows: '1fr',
                         gridTemplateAreas: {
                             xs: `
-                                "main main main main"
-                                "footer footer footer footer"
+                                "main main main rightbar"
+                                "footer footer footer rightbar"
                             `,
                             sm: `
                                 "main main main rightbar"
-                                "footer footer footer footer"
+                                "footer footer footer rightbar"
                             `,
                             lg: `
                                 "main main main rightbar"
-                                "footer footer footer footer"
+                                "footer footer footer rightbar"
                             `,
-                        },
-                    }}
-                >
+                        },}}>
                     <Box sx={{ gridArea: 'main' }}>
                         <Textbox message={isMessage} token={isToken} />
                     </Box>
                     <Box sx={{ gridArea: 'rightbar' }}>
-                        <Listbox token={isToken} user={isUser}/>
+                        <Listbox isToken={isToken} isUser={isUser}/>
                     </Box>
                     <Box sx={{ gridArea: 'footer' }}>
-                        <Inputbox sendMessage={sendMessage} user={isUser} />
+                        <Inputbox sendMessage={sendMessage} isUser={isUser} />
                     </Box>
                 </Box>
             </Box>

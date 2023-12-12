@@ -6,22 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func (handler Handler) GetOnUser(ctx *fiber.Ctx) error {
-	var user []models.Users
-	request := handler.DB.Find(&user).Group("name")
-	if request.Error != nil {
-		return ctx.Status(fiber.StatusInternalServerError).SendString(request.Error.Error())
-	}
-	var response []models.Users
-	for _, m := range user {
-		response = append(response, models.Users{
-			Name:  m.Name,
-			State: m.State,
-		})
-	}
-	return ctx.JSON(response)
-}
-
 func (handler Handler) GetMessages(ctx *fiber.Ctx) error {
 	var messages []models.Messages
 	var request *gorm.DB

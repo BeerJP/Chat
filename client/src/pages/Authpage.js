@@ -1,6 +1,6 @@
 import { React, useEffect } from "react";
 import Box from '@mui/material/Box';
-import Loginbox from "../components/loginbox";
+import Loginbox from "../features/loginbox.js";
 import { getToken } from '../api/apiFunctions.js';
 
 

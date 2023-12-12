@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 import Send from "../assets/send.png"
 
 
-function Inputbox({ sendMessage, user }) {
+function Inputbox({ sendMessage, isUser }) {
 
     const [isText, setText] = useState('');
 
@@ -17,7 +17,7 @@ function Inputbox({ sendMessage, user }) {
     const sendPayload = () => {
         if (isText){
             const payload = {
-                "name": user,
+                "name": isUser,
                 "text": isText,
                 "target": "main",
             }
