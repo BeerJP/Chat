@@ -20,9 +20,9 @@ export const loginUser = async (payload) => {
   }
 };
 
-export const getMessages = async (authToken, value) => {
+export const getMessages = async (authToken, room, name) => {
   try {
-    const response = await axios.get(`${baseURL}/get-msg/${value}`, {
+    const response = await axios.get(`${baseURL}/get-msg/${room}/${name}`, {
       headers: {
         'Authorization': `Bearer ${authToken}`,
       },

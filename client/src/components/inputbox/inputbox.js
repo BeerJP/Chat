@@ -1,4 +1,5 @@
 import { React, useState } from "react";
+import { useSelector } from 'react-redux';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -6,7 +7,10 @@ import TextField from '@mui/material/TextField';
 import Send from "../../assets/send.png"
 
 
-function Inputbox({ sendMessage, isUser, isSelected }) {
+function Inputbox() {
+
+    const user = useSelector((state) => state.user.name);
+    const room = useSelector((state) => state.room.name);
 
     const [isText, setText] = useState('');
 
@@ -19,15 +23,15 @@ function Inputbox({ sendMessage, isUser, isSelected }) {
             return
         }
         const payload = {
-            "name": isUser,
+            "name": user,
             "text": isText,
-            "target": "main",
+            "target": room,
         }
         const jsonString = JSON.stringify(payload);
-        if (isSelected === 'main') {
-            sendMessage(jsonString);
+        if (room === 'main') {
+            console.log(jsonString);
         } else {
-            console.log(isSelected);
+            console.log(jsonString);
         }
         setText('');
     }
@@ -40,35 +44,18 @@ function Inputbox({ sendMessage, isUser, isSelected }) {
 
     return (
         <>
-            <Card sx={{ 
-                    height: 80,
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+            <Card sx={{ height: 80, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'rgba(0, 0, 0, 0.7)',
                     '& .MuiTextField-root': { 
                         m: 1, 
                         width: '98%',
                     },
-                    background: 'rgba(0, 0, 0, 0.7)',
                 }}>
-                <TextField
-                id="outlined-basic"
-                variant="outlined"
-                placeholder="Message..."
-                value={isText}
-                onChange={handleChange}
-                onKeyDown={handleEnter}
-                sx={{
-                    input: { color: 'white', fontSize: 14, },
-                    wordWrap: 'break-word'
-                }}
-                />
-                <Button onClick={sendPayload} sx={{ 
-                        m: 1, 
-                        borderRadius: 50, 
-                        height: 62,
-                    }}>
+                <TextField id="outlined-basic" variant="outlined" placeholder="Message..." value={isText} onChange={handleChange} onKeyDown={handleEnter}
+                    sx={{
+                        input: { color: 'white', fontSize: 14, },
+                        wordWrap: 'break-word'
+                    }}/>
+                <Button onClick={sendPayload} sx={{ m: 1, borderRadius: 50, height: 62, }}>
                     <Avatar sx={{ width: 30, height: 30 }} src={Send}/>
                 </Button>
             </Card>

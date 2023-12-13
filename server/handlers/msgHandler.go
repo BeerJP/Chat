@@ -9,12 +9,13 @@ import (
 func (handler Handler) GetMessages(ctx *fiber.Ctx) error {
 	var messages []models.Messages
 	var request *gorm.DB
+	name := ctx.Params("name")
 	value := ctx.Params("value")
 	switch value {
-	case "all":
-		request = handler.DB.Find(&messages)
+	case "main":
+		request = handler.DB.Where("target = ?", value).Find(&messages)
 	default:
-		request = handler.DB.Order("created_at desc").Limit(20).Find(&messages)
+		request = handler.DB.Where("target = ? AND name = ?", value, name).Find(&messages)
 	}
 
 	if request.Error != nil {

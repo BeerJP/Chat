@@ -1,4 +1,6 @@
 import { React } from "react";
+import { useDispatch } from 'react-redux';
+import { setRoom } from '../../hooks/roomSlice.js';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
@@ -6,7 +8,9 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Typography from '@mui/material/Typography';
 
 
-function Rooms({ isSelected, setSelected }) {
+function Rooms({ room }) {
+
+    const dispatch = useDispatch();
 
     return (
         <>
@@ -15,8 +19,8 @@ function Rooms({ isSelected, setSelected }) {
                     <List component="div" disablePadding>
                         <Card sx={{ width: 'auto', height: 'auto', overflow: 'auto', background: 'rgba(0, 0, 0, 0)', }}>
                             <ListItemButton  key="1" spacing={2} direction="row" 
-                                    selected={isSelected === 'main'}
-                                    onClick={() => setSelected('main')}
+                                    selected={room === 'main'}
+                                    onClick={() => dispatch(setRoom('main'))}
                                     alignItems="center" 
                                     sx={{  mb: 1, pt: 1, pb: 1, pl: 3, pr: 5, justifyContent: "space-between", }}>
                                 <Typography noWrap sx={{ fontSize: 12 }} color="white">

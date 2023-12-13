@@ -1,4 +1,7 @@
 import { React, useState, useEffect } from "react";
+import { useDispatch } from 'react-redux';
+import { setRoom } from '../../hooks/roomSlice.js';
+import { getUsers } from '../../api/apiFunctions.js';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
@@ -9,35 +12,37 @@ import Up from "../../assets/up-arrow.png"
 import Down from "../../assets/down-arrow.png"
 import Online from "../../assets/green-dot.png"
 import Offline from "../../assets/red-dot.png"
-import { getUsers } from '../../api/apiFunctions.js';
 
 
 const delay = ms => new Promise(
     resolve => setTimeout(resolve, ms)
 );
 
-function Users({ isUser, isToken, isSelected, setSelected }) {
+function Users({ room, user }) {
 
-    const [isOpen, setOpen] = useState(true)
-    const [isMember, setMember] = useState([])
+    const dispatch = useDispatch();
+    const token = localStorage.getItem('token');
+
+    const [isOpen, setOpen] = useState(true);
+    const [isMember, setMember] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
             await delay(500);
-            if (isToken) {
-                getUsers(isToken).then(response => {
+            if (token) {
+                getUsers(token).then(response => {
                     if (response) {
                         setMember(response);
                     };
                 });
             };
-        }
+        };
         fetchData();
-    }, [isToken]);
+    }, [token]);
 
     const handleClick = () => {
-        setOpen(!isOpen)
-    }
+        setOpen(!isOpen);
+    };
 
     return (
         <>
@@ -57,9 +62,9 @@ function Users({ isUser, isToken, isSelected, setSelected }) {
                         <Card sx={{ width: 'auto', height: 'auto', overflow: 'auto', background: 'rgba(0, 0, 0, 0)', }}>
                             {isMember && isMember.map((item, index) => (
                                 <ListItemButton  key={index+1} spacing={2} direction="row"
-                                        disabled={item.user === isUser}
-                                        selected={isSelected === item.user}
-                                        onClick={() => setSelected(item.user)}
+                                        disabled={item.user === user}
+                                        selected={room === item.user}
+                                        onClick={() => dispatch(setRoom(item.user))}
                                         alignItems="center" 
                                         sx={{  my: 1, pt: 1, pb: 1, pl: 3, pr: 5.5, justifyContent: "space-between", }}>
                                     <Typography noWrap sx={{ fontSize: 12 }} color="white">

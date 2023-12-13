@@ -24,7 +24,7 @@ func main() {
 	app.Use(jwtware.New(server.TokenMdw()))
 
 	app.Get("/token-check", handlers.TokenCheck)
-	app.Get("/get-msg/:value", hdl.GetMessages)
+	app.Get("/get-msg/:value/:name", hdl.GetMessages)
 	app.Get("/get-user", hdl.GetUser)
 
 	app.Listen(":300")

@@ -4,3 +4,8 @@ export const webSocket = (room, id) => {
     const websocket = new WebSocket(`ws:${baseURL}/ws/:${room}/:${id}`);
     return websocket;
 };
+
+export const directSocket = (room) => {
+    const websocket = new WebSocket(`ws:${baseURL}/dm/:${room}`);
+    return websocket;
+};

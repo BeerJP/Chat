@@ -1,6 +1,4 @@
 import { React, useState } from "react";
-import { useDispatch } from 'react-redux'
-import { setType, setToken } from '../../hooks/userSlice.js'
 import { postToken } from '../../api/apiFunctions.js';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -9,7 +7,6 @@ import TextField from '@mui/material/TextField';
 
 function Guest({ handleCard }) {
 
-    const dispatch = useDispatch();
     const [isName, setName] = useState('');
 
     const submitUser = () => {
@@ -18,8 +15,7 @@ function Guest({ handleCard }) {
                 "user": "Guest " + isName,
             };
             postToken(payload).then(response => {
-                dispatch(setType(false));
-                dispatch(setToken(response.token));
+                localStorage.setItem('token', response.token);
                 window.location = '/chatroom';
             });
         };

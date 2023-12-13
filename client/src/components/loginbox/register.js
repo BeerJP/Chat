@@ -1,8 +1,8 @@
 import { React, useState } from "react";
+import { regisUser } from '../../api/apiFunctions.js';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { regisUser } from '../../api/apiFunctions.js';
 
 
 function Register({ handleCard }) {
@@ -98,30 +98,14 @@ function Register({ handleCard }) {
                         }}
                         />
                 </Stack>
-                <Button onClick={registerUser} sx={{ 
-                        height: 50, 
-                        color: 'white', 
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        letterSpacing: 2,
-                    }}>
+                <Button onClick={registerUser} sx={{ height: 50, color: 'white', fontSize: 16, fontWeight: 'bold', letterSpacing: 2, }}>
                     <span>Register</span>
                 </Button>
                 <div>
-                    <Button onClick={() => handleCard("guest")} sx={{ 
-                            height: 20,
-                            width: 155, 
-                            color: 'white', 
-                            fontSize: 10,
-                        }}>
+                    <Button onClick={() => handleCard("guest")} sx={{ height: 20, width: 155, color: 'white', fontSize: 10, }}>
                         <span>Guest Connect</span>
                     </Button>
-                    <Button onClick={() => handleCard("member")} sx={{ 
-                            height: 20, 
-                            width: 155,
-                            color: 'white', 
-                            fontSize: 10,
-                        }}>
+                    <Button onClick={() => handleCard("member")} sx={{ height: 20, width: 155, color: 'white', fontSize: 10, }}>
                         <span>Login</span>
                     </Button>
                 </div>

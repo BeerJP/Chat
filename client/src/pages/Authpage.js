@@ -1,6 +1,4 @@
 import { React, useEffect } from "react";
-import { useSelector, useDispatch } from 'react-redux'
-import { setName, setType, setAuth, setToken } from '../hooks/userSlice.js'
 import { getToken } from '../api/apiFunctions.js';
 import Box from '@mui/material/Box';
 import Loginbox from "../components/loginbox/loginbox.js";
@@ -8,22 +6,17 @@ import Loginbox from "../components/loginbox/loginbox.js";
 
 function Authpage() {
     
-    const dispatch = useDispatch();
-    const token = useSelector((state) => state.user.token);
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
         if (token) {
             getToken(token).then(response => {
-                dispatch(setName(response.user));
-                dispatch(setAuth(true));
                 window.location = '/chatroom';
             }).catch(error => {
-                dispatch(setName(''));
-                dispatch(setAuth(false));
-                dispatch(setToken(''));
+                localStorage.removeItem('token');
             });
         };
-    },[token, dispatch]);
+    },[token]);
 
     return (
         <>

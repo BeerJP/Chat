@@ -1,31 +1,28 @@
 import { React, useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux'
-import { setName, setType, setAuth, setToken } from '../hooks/userSlice.js'
+import { setName, setType, setAuth } from '../hooks/userSlice.js'
 import { getToken } from '../api/apiFunctions.js';
 import { webSocket } from '../api/webSocket.js';
 import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import Inputbox from "../components/inputbox/inputbox.js";
 import Listbox from "../components/listbox/listbox.js";
-import Textbox from "../components/textbox/textbox.js";
+import Roombox from "../components/textbox/roombox.js";
+import Userbox from "../components/textbox/userbox.js";
 
 
 function Chatpage() {
 
     const dispatch = useDispatch();
-    const token = useSelector((state) => state.user.token);
+    const user = useSelector((state) => state.user.name);
+    const room = useSelector((state) => state.room.name);
+    const token = localStorage.getItem('token');
 
-    const [isSelected, setSelected] = useState('main')
     const [isWebsocket, setWebsocket] = useState(null);
     const [isMessage, setMessage] = useState([{}]);
-    const [isToken, setTokens] = useState();
-    const [isUser, setUsers] = useState('');
 
     useEffect(() => {
-        if (isUser === '') {
-            return
-        }
-        const wsc = webSocket("main", isUser);
+        const wsc = webSocket("main", user);
         wsc.onopen = () => {
             setWebsocket(wsc);
         };
@@ -34,7 +31,7 @@ function Chatpage() {
         };
         wsc.onmessage = (event) => {
             if(event.data) {
-                var response = JSON.parse(event.data);
+                const response = JSON.parse(event.data);
                 setMessage(response);
             }
         };
@@ -44,7 +41,7 @@ function Chatpage() {
                 setWebsocket(null);
             }
         };
-    }, [isUser]);
+    }, [user]);
 
     const sendMessage = (message) => {
         if (isWebsocket.readyState === WebSocket.OPEN) {
@@ -57,14 +54,20 @@ function Chatpage() {
             getToken(token).then(response => {
                 dispatch(setName(response.user));
                 dispatch(setAuth(true));
+                if (response.user.substring(0, 5) !== "Guest") {
+                    dispatch(setType(true));
+                }
             }).catch(error => {
                 dispatch(setName(''));
+                dispatch(setType(false));
                 dispatch(setAuth(false));
-                dispatch(setToken(''));
+                localStorage.removeItem('token');
                 window.location = '/';
             });
-        };
-    },[token, dispatch]);
+        } else {
+            window.location = '/';
+        }
+    },[token]);
 
     return (
         <Grow in={true} timeout={500} style={{ transformOrigin: '1 1 1' }}>
@@ -82,13 +85,15 @@ function Chatpage() {
                             `,
                         },}}>
                     <Box sx={{ gridArea: 'main' }}>
-                        <Textbox isMessage={isMessage} isToken={isToken} isUser={isUser} isSelected={isSelected} />
+                        {
+                            room === 'main' ? <Roombox isMessage={isMessage}/> : <Userbox/>
+                        }
                     </Box>
                     <Box sx={{ gridArea: 'rightbar' }}>
-                        <Listbox isToken={isToken} isUser={isUser} isSelected={isSelected} setSelected={setSelected}/>
+                        <Listbox/>
                     </Box>
                     <Box sx={{ gridArea: 'footer' }}>
-                        <Inputbox sendMessage={sendMessage} isUser={isUser} isSelected={isSelected} />
+                        <Inputbox/>
                     </Box>
                 </Box>
             </Box>

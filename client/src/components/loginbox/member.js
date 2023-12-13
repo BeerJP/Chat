@@ -1,8 +1,9 @@
 import { React, useState } from "react";
+import { postToken, loginUser } from '../../api/apiFunctions.js';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { postToken, loginUser } from '../../api/apiFunctions.js';
+
 
 
 function Member({ handleCard }) {
@@ -30,6 +31,7 @@ function Member({ handleCard }) {
                     "user": reponse
                 }).then(response => {
                     localStorage.setItem('token', response.token);
+                    window.location = '/chatroom';
                 });
             })
         };
@@ -53,9 +55,7 @@ function Member({ handleCard }) {
                     onChange={handleChange}
                     onKeyDown={handleEnter}
                     inputProps={{ maxLength: 8 }}
-                    sx={{
-                        input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' },
-                    }}
+                    sx={{ input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' }, }}
                     />
                 <TextField
                     id="outlined password1"
@@ -67,34 +67,16 @@ function Member({ handleCard }) {
                     onChange={handleChange}
                     onKeyDown={handleEnter}
                     inputProps={{ maxLength: 8 }}
-                    sx={{
-                        input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' },
-                    }}
+                    sx={{ input: { height: 10, color: 'white', fontSize: 16, textAlign: 'center' }, }}
                     />
-                <Button onClick={submitUser} sx={{ 
-                        height: 50, 
-                        color: 'white', 
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        letterSpacing: 2,
-                    }}>
+                <Button onClick={submitUser} sx={{ height: 50, color: 'white', fontSize: 16, fontWeight: 'bold', letterSpacing: 2, }}>
                     <span>Login</span>
                 </Button>
                 <div>
-                    <Button onClick={() => handleCard("guest")} sx={{ 
-                            height: 20,
-                            width: 155, 
-                            color: 'white', 
-                            fontSize: 10,
-                        }}>
+                    <Button onClick={() => handleCard("guest")} sx={{ height: 20, width: 155, color: 'white', fontSize: 10, }}>
                         <span>Guest Connect</span>
                     </Button>
-                    <Button onClick={() => handleCard("register")} sx={{ 
-                            height: 20, 
-                            width: 155,
-                            color: 'white', 
-                            fontSize: 10,
-                        }}>
+                    <Button onClick={() => handleCard("register")} sx={{ height: 20, width: 155, color: 'white', fontSize: 10, }}>
                         <span>Register</span>
                     </Button>
                 </div>
