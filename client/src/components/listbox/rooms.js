@@ -15,8 +15,8 @@ function Rooms({ isSelected, setSelected }) {
                     <List component="div" disablePadding>
                         <Card sx={{ width: 'auto', height: 'auto', overflow: 'auto', background: 'rgba(0, 0, 0, 0)', }}>
                             <ListItemButton  key="1" spacing={2} direction="row" 
-                                    selected={isSelected === 0}
-                                    onClick={() => setSelected(0)}
+                                    selected={isSelected === 'main'}
+                                    onClick={() => setSelected('main')}
                                     alignItems="center" 
                                     sx={{  mb: 1, pt: 1, pb: 1, pl: 3, pr: 5, justifyContent: "space-between", }}>
                                 <Typography noWrap sx={{ fontSize: 12 }} color="white">

@@ -1,19 +1,16 @@
 import { React, useState } from "react";
+import { useDispatch } from 'react-redux'
+import { setType, setToken } from '../../hooks/userSlice.js'
+import { postToken } from '../../api/apiFunctions.js';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { postToken } from '../../api/apiFunctions.js';
 
 
 function Guest({ handleCard }) {
 
+    const dispatch = useDispatch();
     const [isName, setName] = useState('');
-
-    const handleChange = (event) => {
-        if (event.target.type ===  'text') {
-            setName(event.target.value);
-        }
-    };
 
     const submitUser = () => {
         if (isName) {
@@ -21,8 +18,9 @@ function Guest({ handleCard }) {
                 "user": "Guest " + isName,
             };
             postToken(payload).then(response => {
-                localStorage.setItem('token', response.token);
-                window.location = `/chatroom`;
+                dispatch(setType(false));
+                dispatch(setToken(response.token));
+                window.location = '/chatroom';
             });
         };
     };
@@ -31,6 +29,12 @@ function Guest({ handleCard }) {
         if (event.key === 'Enter') {
             submitUser();
         };
+    };
+
+    const handleChange = (event) => {
+        if (event.target.type ===  'text') {
+            setName(event.target.value);
+        }
     };
 
     return (

@@ -8,8 +8,13 @@ import Typography from '@mui/material/Typography';
 import Up from "../../assets/up-arrow.png"
 import Down from "../../assets/down-arrow.png"
 import Online from "../../assets/green-dot.png"
+import Offline from "../../assets/red-dot.png"
 import { getUsers } from '../../api/apiFunctions.js';
 
+
+const delay = ms => new Promise(
+    resolve => setTimeout(resolve, ms)
+);
 
 function Users({ isUser, isToken, isSelected, setSelected }) {
 
@@ -17,13 +22,17 @@ function Users({ isUser, isToken, isSelected, setSelected }) {
     const [isMember, setMember] = useState([])
 
     useEffect(() => {
-        if (isToken) {
-            getUsers(isToken).then(response => {
-                if (response) {
-                    setMember(response);
-                };
-            });
-        };
+        const fetchData = async () => {
+            await delay(500);
+            if (isToken) {
+                getUsers(isToken).then(response => {
+                    if (response) {
+                        setMember(response);
+                    };
+                });
+            };
+        }
+        fetchData();
     }, [isToken]);
 
     const handleClick = () => {
@@ -49,19 +58,14 @@ function Users({ isUser, isToken, isSelected, setSelected }) {
                             {isMember && isMember.map((item, index) => (
                                 <ListItemButton  key={index+1} spacing={2} direction="row"
                                         disabled={item.user === isUser}
-                                        selected={isSelected === index+1}
-                                        onClick={() => setSelected(index+1)}
+                                        selected={isSelected === item.user}
+                                        onClick={() => setSelected(item.user)}
                                         alignItems="center" 
                                         sx={{  my: 1, pt: 1, pb: 1, pl: 3, pr: 5.5, justifyContent: "space-between", }}>
                                     <Typography noWrap sx={{ fontSize: 12 }} color="white">
                                         {item.user}
                                     </Typography>
-                                    {
-                                        item.state === "1" ?
-                                        <Avatar sx={{ width: 12, height: 12 }} src={Online}/>
-                                        :
-                                        <></>
-                                    }
+                                    <Avatar sx={{ width: 12, height: 12 }} src={ item.state === "1" ? Online : Offline }/>
                                 </ListItemButton >
                             ))}
                         </Card>

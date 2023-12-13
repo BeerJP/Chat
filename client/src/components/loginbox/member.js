@@ -30,7 +30,6 @@ function Member({ handleCard }) {
                     "user": reponse
                 }).then(response => {
                     localStorage.setItem('token', response.token);
-                    window.location = `/chatroom`;
                 });
             })
         };

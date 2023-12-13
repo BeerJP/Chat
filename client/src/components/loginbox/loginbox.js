@@ -1,7 +1,7 @@
 import { React, useState } from "react";
-import Guest from "../components/loginbox/guest.js";
-import Member from "../components/loginbox/member.js";
-import Register from "../components/loginbox/register.js";
+import Guest from "./guest.js";
+import Member from "./member.js";
+import Register from "./register.js";
 
 
 function Loginbox() {

@@ -3,10 +3,10 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
-import Send from "../assets/send.png"
+import Send from "../../assets/send.png"
 
 
-function Inputbox({ sendMessage, isUser }) {
+function Inputbox({ sendMessage, isUser, isSelected }) {
 
     const [isText, setText] = useState('');
 
@@ -15,16 +15,21 @@ function Inputbox({ sendMessage, isUser }) {
     };
 
     const sendPayload = () => {
-        if (isText){
-            const payload = {
-                "name": isUser,
-                "text": isText,
-                "target": "main",
-            }
-            const jsonString = JSON.stringify(payload);
-            sendMessage(jsonString);
-            setText('');
+        if (!isText){
+            return
         }
+        const payload = {
+            "name": isUser,
+            "text": isText,
+            "target": "main",
+        }
+        const jsonString = JSON.stringify(payload);
+        if (isSelected === 'main') {
+            sendMessage(jsonString);
+        } else {
+            console.log(isSelected);
+        }
+        setText('');
     }
 
     const handleEnter = (event) => {

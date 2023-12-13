@@ -1,15 +1,13 @@
-import { React, useState } from "react";
+import { React } from "react";
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Rooms from "../components/listbox/rooms.js";
-import Users from "../components/listbox/users.js";
+import Rooms from "./rooms.js";
+import Users from "./users.js";
 
 
-function Listbox({ isToken, isUser }) {
-
-    const [isSelected, setSelected] = useState(0)
+function Listbox({ isSelected, setSelected, isToken, isUser }) {
 
     const logOut = () => {
         localStorage.removeItem("token");

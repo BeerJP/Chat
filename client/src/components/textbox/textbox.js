@@ -4,10 +4,10 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
-import { getMessages } from '../api/apiFunctions.js';
+import { getMessages } from '../../api/apiFunctions.js';
 
 
-function Textbox({ message, token }) {
+function Textbox({ isMessage, isToken, isUser, isSelected }) {
 
     const [showAllMessages, setShowAllMessages] = useState(false);
     const [isScroll, setScroll] = useState(true);
@@ -22,8 +22,8 @@ function Textbox({ message, token }) {
     }, [chatMessages]);
 
     useEffect(() => {
-        if (token) {
-            getMessages(token, "10").then(response => {
+        if (isToken) {
+            getMessages(isToken, "10").then(response => {
                 if (response) {
                     setChatMessages(response.reverse());
                     if (response.length < 20) {
@@ -36,13 +36,13 @@ function Textbox({ message, token }) {
                 console.error(error);
             });
         };
-    }, [token]);
+    }, [isToken]);
 
     useEffect(() => {
-        if (message) {
-            setChatMessages(prevChat => prevChat.concat(message));
+        if (isMessage) {
+            setChatMessages(prevChat => prevChat.concat(isMessage));
         }
-    }, [message]);
+    }, [isMessage]);
 
     const scrollToBottom = () => {
         if (!isScroll) {
@@ -55,8 +55,8 @@ function Textbox({ message, token }) {
 
     const handleShowAllMessages = () => {
         setScroll(false);
-        if (token) {
-            getMessages(token, "all").then(response => {
+        if (isToken) {
+            getMessages(isToken, "all").then(response => {
                 if (response) {
                     setChatMessages(response);
                     setShowAllMessages(false);
