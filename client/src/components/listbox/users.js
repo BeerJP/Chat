@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setRoom } from '../../hooks/roomSlice.js';
 import { getUsers } from '../../api/apiFunctions.js';
 import Avatar from '@mui/material/Avatar';
@@ -21,7 +21,8 @@ const delay = ms => new Promise(
 function Users({ room, user }) {
 
     const dispatch = useDispatch();
-    const token = localStorage.getItem('token');
+    const nums = useSelector((state) => state.nums.online);
+    const token = useSelector((state) => state.user.token);
 
     const [isOpen, setOpen] = useState(true);
     const [isMember, setMember] = useState([]);
@@ -38,7 +39,7 @@ function Users({ room, user }) {
             };
         };
         fetchData();
-    }, [token]);
+    }, [token, nums]);
 
     const handleClick = () => {
         setOpen(!isOpen);

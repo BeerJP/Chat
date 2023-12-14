@@ -19,7 +19,8 @@ func main() {
 	app.Post("/user-regis", hdl.RegisUser)
 	app.Post("/user-login", hdl.LoginUser)
 	app.Post("/token-get", handlers.TokenGet)
-	app.Get("/ws/:room/:name", websocket.New(hdl.HandlerSocket))
+	app.Use("/ws", handlers.WebSocketUpgrade)
+	app.Get("/ws/:id/:name", websocket.New(hdl.HandlerSocket))
 
 	app.Use(jwtware.New(server.TokenMdw()))
 

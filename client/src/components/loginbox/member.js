@@ -28,7 +28,8 @@ function Member({ handleCard }) {
             };
             loginUser(payload).then(reponse => {
                 postToken({
-                    "user": reponse
+                    "user": reponse,
+                    "type": '1',
                 }).then(response => {
                     localStorage.setItem('token', response.token);
                     window.location = '/chatroom';

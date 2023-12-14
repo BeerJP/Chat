@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux'
-import { setName, setType, setAuth } from '../hooks/userSlice.js'
+import { setName, setType, setAuth, setToken } from '../hooks/userSlice.js'
+import { setOnline } from '../hooks/numsSlice.js'
 import { getToken } from '../api/apiFunctions.js';
 import { webSocket } from '../api/webSocket.js';
 import Box from '@mui/material/Box';
@@ -15,6 +16,7 @@ function Chatpage() {
 
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.name);
+    const type = useSelector((state) => state.user.type);
     const room = useSelector((state) => state.room.name);
     const token = localStorage.getItem('token');
 
@@ -22,7 +24,10 @@ function Chatpage() {
     const [isMessage, setMessage] = useState([{}]);
 
     useEffect(() => {
-        const wsc = webSocket("main", user);
+        if (!token) {
+            return;
+        };
+        const wsc = webSocket(type, user);
         wsc.onopen = () => {
             setWebsocket(wsc);
         };
@@ -30,15 +35,12 @@ function Chatpage() {
             setWebsocket(null);
         };
         wsc.onmessage = (event) => {
-            if(event.data) {
-                const response = JSON.parse(event.data);
+            const response = JSON.parse(event.data);
+            if (response.text) {
+                console.log(response.text);
                 setMessage(response);
-            }
-        };
-        return () => {
-            if (isWebsocket) {
-                isWebsocket.close();
-                setWebsocket(null);
+            } else {
+                dispatch(setOnline(response.member))
             }
         };
     }, [user]);
@@ -54,7 +56,8 @@ function Chatpage() {
             getToken(token).then(response => {
                 dispatch(setName(response.user));
                 dispatch(setAuth(true));
-                if (response.user.substring(0, 5) !== "Guest") {
+                dispatch(setToken(token));
+                if (response.type === "1") {
                     dispatch(setType(true));
                 }
             }).catch(error => {
@@ -72,7 +75,7 @@ function Chatpage() {
     return (
         <Grow in={true} timeout={500} style={{ transformOrigin: '1 1 1' }}>
             <Box sx={{ height: '100vh', width: 'auto', borderRadius: 1, margin: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-                <Box m={1} sx={{ boxShadow: 3, height:'80%', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0.2, gridTemplateRows: '1fr',
+                <Box m={1} sx={{ boxShadow: 3, height: 'auto', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0.2, gridTemplateRows: '1fr',
                         gridTemplateAreas: {
                             xs: `
                                 "main main main rightbar" "footer footer footer rightbar"
@@ -93,7 +96,7 @@ function Chatpage() {
                         <Listbox/>
                     </Box>
                     <Box sx={{ gridArea: 'footer' }}>
-                        <Inputbox/>
+                        <Inputbox sendMessage={sendMessage}/>
                     </Box>
                 </Box>
             </Box>

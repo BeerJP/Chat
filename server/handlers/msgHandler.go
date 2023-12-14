@@ -15,7 +15,7 @@ func (handler Handler) GetMessages(ctx *fiber.Ctx) error {
 	case "main":
 		request = handler.DB.Where("target = ?", value).Find(&messages)
 	default:
-		request = handler.DB.Where("target = ? AND name = ?", value, name).Find(&messages)
+		request = handler.DB.Where("target = ? AND name = ?", value, name).Or("target = ? AND name = ?", name, value).Find(&messages)
 	}
 
 	if request.Error != nil {

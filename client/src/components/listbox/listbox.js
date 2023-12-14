@@ -21,7 +21,7 @@ function Listbox() {
 
     return (
         <>
-            <Card sx={{ width: 'auto', height: '100%', background: 'rgba(0, 0, 0, 0.7)' }}>
+            <Card sx={{ width: 'auto', height: 580, background: 'rgba(0, 0, 0, 0.7)' }}>
                 <Card sx={{ width: 'auto', height: 'auto', background: 'rgba(0, 0, 0, 0)' }}>
                     <Stack  key={1} spacing={2} direction="row" alignItems="center" justifyContent={"space-between"} sx={{ my: 1, pt: 1, px: 3, }}>
                         <Typography noWrap sx={{ fontSize: 14 }} color="white">

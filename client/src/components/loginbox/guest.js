@@ -13,6 +13,7 @@ function Guest({ handleCard }) {
         if (isName) {
             const payload = {
                 "user": "Guest " + isName,
+                "type": '0',
             };
             postToken(payload).then(response => {
                 localStorage.setItem('token', response.token);

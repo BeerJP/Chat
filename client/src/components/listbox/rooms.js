@@ -1,5 +1,5 @@
 import { React } from "react";
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { setRoom } from '../../hooks/roomSlice.js';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 function Rooms({ room }) {
 
     const dispatch = useDispatch();
+    const nums = useSelector((state) => state.nums.online);
 
     return (
         <>
@@ -27,7 +28,7 @@ function Rooms({ room }) {
                                     <span>Global Room</span>
                                 </Typography>
                                 <Typography noWrap sx={{ fontSize: 12 }} color="white">
-                                    <span>( 0 )</span>
+                                    <span>( { nums } )</span>
                                 </Typography>
                             </ListItemButton >
                         </Card>

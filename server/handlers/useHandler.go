@@ -42,6 +42,7 @@ func (handler Handler) RegisUser(ctx *fiber.Ctx) error {
 		if err := handler.DB.Create(&models.Users{
 			Name:     user.Name,
 			Password: HashPassword(user.Password),
+			Type:     "1",
 			State:    "0",
 		}).Error; err != nil {
 			return ctx.SendString("Database error")

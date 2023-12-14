@@ -10,8 +10,13 @@ type Messages struct {
 }
 
 type MessageResponse struct {
-	Name string `json:"name"`
-	Text string `json:"text"`
-	Date string `json:"date"`
-	Time string `json:"time"`
+	Name   string `json:"name"`
+	Text   string `json:"text"`
+	Date   string `json:"date"`
+	Time   string `json:"time"`
+	Target string `json:"target"`
+}
+
+type Member struct {
+	Online int `json:"member"`
 }

@@ -26,7 +26,7 @@ function Roombox({ isMessage }) {
 
     useEffect(() => {
         if (token && user && auth) {
-            getMessages(token, 'main', user).then(response => {
+            getMessages(token, "main", user).then(response => {
                 if (response) {
                     setChatMessages(response);
                 };
@@ -52,31 +52,33 @@ function Roombox({ isMessage }) {
     };
 
     return (
-        <Card sx={{ width: '100%', height: '100%', overflowY: 'scroll', background: 'rgba(0, 0, 0, 0.7)' }}>
-            <CardContent sx={{ mx: 1, mb: 0}}>
+        <Card sx={{ width: '100%', height: 500, background: 'rgba(0, 0, 0, 0.7)' }}>
+            <CardContent sx={{ mx: 1, mb: 0, height: 'auto' }}>
                 <Typography borderBottom={1} color="lightgrey" sx={{ fontSize: 10, mb: 1, display: 'flex', justifyContent: 'right' }}>
                     <span>Global Room</span>
                 </Typography>
             </CardContent>
-            <div ref={containerRef}>
-                {
-                    chatMessages[0].text && chatMessages.map((item, index) => (
-                        <div key={index}>
-                            <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
-                                <CardContent sx={{ mx: 1, mb: 0}}>
-                                    <Typography color="lightgrey" sx={{ fontSize: 10, mb: 1, display: 'flex', justifyContent: 'space-between' }}>
-                                        <span>{item.name}</span>
-                                        <span>{item.time} : {item.date}</span>
-                                    </Typography>
-                                    <Typography color="white" sx={{ fontSize: 14, width: '85%', wordWrap: 'break-word', mb: 0, }}>
-                                        <span>{item.text}</span>
-                                    </Typography>
-                                </CardContent>
-                            </Grow>
-                        </div>
-                    ))
-                }
-            </div>
+            <Card sx={{ overflowY: 'scroll', width: '100%', height: 445, background: 'rgba(0, 0, 0, 0)' }}>
+                <div ref={containerRef}>
+                    {
+                        chatMessages[0].text && chatMessages.map((item, index) => (
+                            <div key={index}>
+                                <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
+                                    <CardContent sx={{ mx: 0, mb: 0}}>
+                                        <Typography color="lightgrey" sx={{ fontSize: 10, mb: 1, display: 'flex', justifyContent: 'space-between' }}>
+                                            <span>{item.name}</span>
+                                            <span>{item.time} : {item.date}</span>
+                                        </Typography>
+                                        <Typography color="white" sx={{ fontSize: 14, width: '85%', wordWrap: 'break-word', mb: 0, }}>
+                                            <span>{item.text}</span>
+                                        </Typography>
+                                    </CardContent>
+                                </Grow>
+                            </div>
+                        ))
+                    }
+                </div>
+            </Card>
         </Card>
     );
 };

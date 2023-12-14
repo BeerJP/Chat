@@ -15,6 +15,7 @@ func TokenGet(ctx *fiber.Ctx) error {
 	}
 	claims := jwt.MapClaims{
 		"name": user.Name,
+		"type": user.Type,
 		"exp":  time.Now().Add(time.Hour * 1).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -29,5 +30,6 @@ func TokenCheck(ctx *fiber.Ctx) error {
 	user := ctx.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	name := claims["name"].(string)
-	return ctx.JSON(fiber.Map{"user": name})
+	roll := claims["type"].(string)
+	return ctx.JSON(fiber.Map{"user": name, "type": roll})
 }

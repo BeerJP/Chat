@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField';
 import Send from "../../assets/send.png"
 
 
-function Inputbox() {
+function Inputbox({ sendMessage }) {
 
     const user = useSelector((state) => state.user.name);
     const room = useSelector((state) => state.room.name);
@@ -28,11 +28,7 @@ function Inputbox() {
             "target": room,
         }
         const jsonString = JSON.stringify(payload);
-        if (room === 'main') {
-            console.log(jsonString);
-        } else {
-            console.log(jsonString);
-        }
+        sendMessage(jsonString);
         setText('');
     }
 

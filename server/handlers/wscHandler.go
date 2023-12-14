@@ -9,10 +9,19 @@ import (
 	"github.com/BeerJP/server/models"
 	"github.com/BeerJP/server/server"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
 )
 
-func (socket Handler) CreateRoom(roomName string) {
+func WebSocketUpgrade(ctx *fiber.Ctx) error {
+	if websocket.IsWebSocketUpgrade(ctx) {
+		ctx.Locals("allowed", true)
+		return ctx.Next()
+	}
+	return fiber.ErrUpgradeRequired
+}
+
+func (socket *Handler) CreateRoom(roomName string) {
 	if _, exists := socket.WS.Rooms[roomName]; !exists {
 		socket.WS.Rooms[roomName] = &server.Room{
 			Name:    roomName,
@@ -21,7 +30,10 @@ func (socket Handler) CreateRoom(roomName string) {
 	}
 }
 
-func (socket Handler) JoinRoom(roomName string, ctx *websocket.Conn) {
+func (socket *Handler) JoinRoom(roomName string, ctx *websocket.Conn) {
+	socket.Mu.Lock()
+	defer socket.Mu.Unlock()
+
 	room, exists := socket.WS.Rooms[roomName]
 	if !exists {
 		socket.CreateRoom(roomName)
@@ -30,36 +42,54 @@ func (socket Handler) JoinRoom(roomName string, ctx *websocket.Conn) {
 	room.Members[ctx] = true
 }
 
-func (socket Handler) SendMessage(roomName string, data interface{}) {
+func (socket *Handler) OutRoom(roomName string, ctx *websocket.Conn) {
+	socket.Mu.Lock()
+	defer socket.Mu.Unlock()
+
 	room, exists := socket.WS.Rooms[roomName]
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		log.Println("json marshal error:", err)
-		return
-	}
 	if exists {
-		for conn := range room.Members {
-			if err := conn.WriteMessage(websocket.TextMessage, jsonData); err != nil {
-				log.Println("write:", err)
-				break
+		delete(room.Members, ctx)
+	}
+}
+
+func (socket *Handler) SendMessage(roomName string, message []byte, target string) {
+	socket.Mu.Lock()
+	defer socket.Mu.Unlock()
+
+	room, exists := socket.WS.Rooms[roomName]
+	if exists {
+		if target == "main" {
+			for conn := range room.Members {
+				if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+					break
+				}
+			}
+		} else {
+			for conn := range room.Members {
+				if strings.Trim(conn.Params("name"), ":") == target {
+					if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
+						break
+					}
+				}
 			}
 		}
 	}
 }
 
-func (socket Handler) HandlerSocket(ctx *websocket.Conn) {
+func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 	defer ctx.Close()
-	roomName := strings.Trim(ctx.Params("room"), ":")
-	userName := strings.Trim(ctx.Params("name"), ":")
-	socket.JoinRoom(roomName, ctx)
 
-	if len(userName) >= 5 && userName[:5] == " Guest" {
-		var user []models.Users
-		request := socket.DB.Where("state = 1").Find(&user).RowsAffected
-		member := len(socket.WS.Rooms["main"].Members) - int(request)
-		log.Println("Guest:", member)
-	} else {
-		go func() {
+	userType := strings.Trim(ctx.Params("id"), ":")
+	userName := strings.Trim(ctx.Params("name"), ":")
+
+	socket.JoinRoom("main", ctx)
+	jsonData, _ := json.Marshal(models.Member{
+		Online: len(socket.WS.Rooms["main"].Members) / 2,
+	})
+	socket.SendMessage("main", jsonData, "main")
+
+	go func() {
+		if userType == "true" {
 			response := models.Users{
 				Name: userName,
 			}
@@ -67,15 +97,15 @@ func (socket Handler) HandlerSocket(ctx *websocket.Conn) {
 				log.Println("database error:", err)
 				return
 			}
-		}()
-	}
+		}
+	}()
 
 	for {
 		var message models.Messages
 		if err := ctx.ReadJSON(&message); err != nil {
-			log.Println("read:", err)
 			break
 		}
+		target := string(message.Target)
 
 		go func(msg models.Messages) {
 			if err := socket.DB.Create(&models.Messages{
@@ -88,20 +118,19 @@ func (socket Handler) HandlerSocket(ctx *websocket.Conn) {
 			}
 		}(message)
 
-		response := models.MessageResponse{
-			Name: message.Name,
-			Text: message.Text,
-			Date: time.Now().Format("2006-01-02"),
-			Time: time.Now().Format("15:04"),
-		}
+		response, _ := json.Marshal(models.MessageResponse{
+			Name:   message.Name,
+			Text:   message.Text,
+			Date:   time.Now().Format("2006-01-02"),
+			Time:   time.Now().Format("15:04"),
+			Target: message.Target,
+		})
 
-		socket.SendMessage(roomName, response)
+		socket.SendMessage("main", response, target)
 	}
 
-	if len(userName) >= 5 && userName[:5] == " Guest" {
-		log.Println("Guest: Delete")
-	} else {
-		go func() {
+	go func() {
+		if userType == "true" {
 			response := models.Users{
 				Name: userName,
 			}
@@ -109,7 +138,13 @@ func (socket Handler) HandlerSocket(ctx *websocket.Conn) {
 				log.Println("database error:", err)
 				return
 			}
-		}()
-	}
+		}
+	}()
+
+	socket.OutRoom("main", ctx)
+	jsonData, _ = json.Marshal(models.Member{
+		Online: len(socket.WS.Rooms["main"].Members) / 2,
+	})
+	socket.SendMessage("main", jsonData, "main")
 
 }
