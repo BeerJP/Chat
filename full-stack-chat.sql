@@ -31,6 +31,7 @@ CREATE TABLE `messages` (
 CREATE TABLE `users` (
   `name` longtext DEFAULT NULL,
   `password` longtext DEFAULT NULL,
+  `type` longtext DEFAULT NULL,
   `state` longtext DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 COMMIT;

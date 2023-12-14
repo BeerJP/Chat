@@ -37,7 +37,6 @@ function Chatpage() {
         wsc.onmessage = (event) => {
             const response = JSON.parse(event.data);
             if (response.text) {
-                console.log(response.text);
                 setMessage(response);
             } else {
                 dispatch(setOnline(response.member))
@@ -89,7 +88,7 @@ function Chatpage() {
                         },}}>
                     <Box sx={{ gridArea: 'main' }}>
                         {
-                            room === 'main' ? <Roombox isMessage={isMessage}/> : <Userbox/>
+                            room === 'main' ? <Roombox isMessage={isMessage}/> : <Userbox isMessage={isMessage}/>
                         }
                     </Box>
                     <Box sx={{ gridArea: 'rightbar' }}>

@@ -7,7 +7,7 @@ import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
 
 
-function Userbox() {
+function Userbox({ isMessage }) {
 
     const user = useSelector((state) => state.user.name);
     const auth = useSelector((state) => state.user.auth);
@@ -37,11 +37,11 @@ function Userbox() {
         };
     }, [token, user, auth]);
 
-//    useEffect(() => {
-//        if (isMessage) {
-//            setChatMessages(prevChat => prevChat.concat(isMessage));
-//        };
-//    }, [isMessage]);
+    useEffect(() => {
+        if (isMessage && (isMessage.target === room || isMessage.target === user)) {
+            setChatMessages(prevChat => prevChat.concat(isMessage));
+        };
+    }, [isMessage]);
 
     const scrollToBottom = () => {
         if (!isScroll) {
@@ -56,7 +56,7 @@ function Userbox() {
         <Card sx={{ width: '100%', height: 500, background: 'rgba(0, 0, 0, 0.7)' }}>
             <CardContent sx={{ mx: 1, mb: 0, height: 'auto' }}>
                 <Typography borderBottom={1} color="lightgrey" sx={{ fontSize: 10, mb: 1, display: 'flex', justifyContent: 'right' }}>
-                    <span>Global Room</span>
+                    <span>{room}</span>
                 </Typography>
             </CardContent>
             <Card sx={{ overflowY: 'scroll', width: '100%', height: 445, background: 'rgba(0, 0, 0, 0)' }}>
@@ -65,12 +65,12 @@ function Userbox() {
                         chatMessages[0].text && chatMessages.map((item, index) => (
                             <div key={index}>
                                 <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
-                                    <CardContent sx={{ mx: 0, mb: 0}}>
-                                        <Typography color="lightgrey" sx={{ fontSize: 10, mb: 1, display: 'flex', justifyContent: 'space-between' }}>
+                                    <CardContent sx={{ mx: 1, mb: 0}}>
+                                        <Typography color="lightgrey" sx={{ fontSize: 10, mb: 1.5, display: 'flex', justifyContent: 'space-between' }}>
                                             <span>{item.name}</span>
                                             <span>{item.time} : {item.date}</span>
                                         </Typography>
-                                        <Typography color="white" sx={{ fontSize: 14, width: '85%', wordWrap: 'break-word', mb: 0, }}>
+                                        <Typography justifyContent={item.name == user ? "right" : ""} color="white" sx={{ fontSize: 14, wordWrap: 'break-word', mb: 0, display: 'flex' }}>
                                             <span>{item.text}</span>
                                         </Typography>
                                     </CardContent>

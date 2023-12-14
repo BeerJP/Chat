@@ -11,6 +11,7 @@ function Roombox({ isMessage }) {
 
     const user = useSelector((state) => state.user.name);
     const auth = useSelector((state) => state.user.auth);
+    const room = useSelector((state) => state.room.name);
     const token = localStorage.getItem('token');
 
     const [isScroll, setScroll] = useState(true);
@@ -37,7 +38,7 @@ function Roombox({ isMessage }) {
     }, [token, user, auth]);
 
     useEffect(() => {
-        if (isMessage) {
+        if (isMessage && isMessage.target === room) {
             setChatMessages(prevChat => prevChat.concat(isMessage));
         };
     }, [isMessage]);
@@ -64,12 +65,12 @@ function Roombox({ isMessage }) {
                         chatMessages[0].text && chatMessages.map((item, index) => (
                             <div key={index}>
                                 <Grow in={true} style={{ transformOrigin: '0 0 0' }}>
-                                    <CardContent sx={{ mx: 0, mb: 0}}>
-                                        <Typography color="lightgrey" sx={{ fontSize: 10, mb: 1, display: 'flex', justifyContent: 'space-between' }}>
+                                    <CardContent sx={{ mx: 1, mb: 0}}>
+                                        <Typography color="lightgrey" sx={{ fontSize: 10, mb: 1.5, display: 'flex', justifyContent: 'space-between' }}>
                                             <span>{item.name}</span>
                                             <span>{item.time} : {item.date}</span>
                                         </Typography>
-                                        <Typography color="white" sx={{ fontSize: 14, width: '85%', wordWrap: 'break-word', mb: 0, }}>
+                                        <Typography justifyContent={item.name == user ? "right" : ""} color="white" sx={{ fontSize: 14, wordWrap: 'break-word', mb: 0, display: 'flex' }}>
                                             <span>{item.text}</span>
                                         </Typography>
                                     </CardContent>

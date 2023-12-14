@@ -52,7 +52,7 @@ func (socket *Handler) OutRoom(roomName string, ctx *websocket.Conn) {
 	}
 }
 
-func (socket *Handler) SendMessage(roomName string, message []byte, target string) {
+func (socket *Handler) SendMessage(roomName string, message []byte, target string, sender string) {
 	socket.Mu.Lock()
 	defer socket.Mu.Unlock()
 
@@ -66,7 +66,8 @@ func (socket *Handler) SendMessage(roomName string, message []byte, target strin
 			}
 		} else {
 			for conn := range room.Members {
-				if strings.Trim(conn.Params("name"), ":") == target {
+				receiver := strings.Trim(conn.Params("name"), ":")
+				if receiver == target || receiver == sender {
 					if err := conn.WriteMessage(websocket.TextMessage, message); err != nil {
 						break
 					}
@@ -86,7 +87,7 @@ func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 	jsonData, _ := json.Marshal(models.Member{
 		Online: len(socket.WS.Rooms["main"].Members) / 2,
 	})
-	socket.SendMessage("main", jsonData, "main")
+	socket.SendMessage("main", jsonData, "main", userName)
 
 	go func() {
 		if userType == "true" {
@@ -126,7 +127,7 @@ func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 			Target: message.Target,
 		})
 
-		socket.SendMessage("main", response, target)
+		socket.SendMessage("main", response, target, userName)
 	}
 
 	go func() {
@@ -145,6 +146,6 @@ func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 	jsonData, _ = json.Marshal(models.Member{
 		Online: len(socket.WS.Rooms["main"].Members) / 2,
 	})
-	socket.SendMessage("main", jsonData, "main")
+	socket.SendMessage("main", jsonData, "main", userName)
 
 }
