@@ -85,7 +85,7 @@ function Chatpage() {
                             `,
                         },}}>
                     <Box sx={{ gridArea: 'main' }}>
-                        <Textbox isMessage={isMessage}/> 
+                        <Textbox isMessage={isMessage} token={token}/> 
                     </Box>
                     <Box sx={{ gridArea: 'rightbar' }}>
                         <Listbox/>

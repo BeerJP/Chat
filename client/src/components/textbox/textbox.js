@@ -7,12 +7,11 @@ import Grow from '@mui/material/Grow';
 import Typography from '@mui/material/Typography';
 
 
-function Textbox({ isMessage }) {
+function Textbox({ isMessage, token }) {
 
     const user = useSelector((state) => state.user.name);
     const auth = useSelector((state) => state.user.auth);
     const room = useSelector((state) => state.room.name);
-    const token = localStorage.getItem('token');
 
     const [isScroll, setScroll] = useState(true);
     const [chatMessages, setChatMessages] = useState([{}]);
