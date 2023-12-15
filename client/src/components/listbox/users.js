@@ -22,7 +22,7 @@ const delay = ms => new Promise(
 function Users({ room, user }) {
 
     const dispatch = useDispatch();
-    const nums = useSelector((state) => state.nums.online);
+    const nums = useSelector((state) => state.room.online);
     const token = useSelector((state) => state.user.token);
 
     const [isOpen, setOpen] = useState(true);

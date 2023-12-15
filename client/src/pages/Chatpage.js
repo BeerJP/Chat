@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux'
 import { setName, setType, setAuth, setToken } from '../hooks/userSlice.js'
-import { setOnline } from '../hooks/numsSlice.js'
+import { setOnline } from '../hooks/roomSlice.js'
 import { getToken } from '../api/apiFunctions.js';
 import { webSocket } from '../api/webSocket.js';
 import Box from '@mui/material/Box';
