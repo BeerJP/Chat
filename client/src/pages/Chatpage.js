@@ -8,8 +8,7 @@ import Box from '@mui/material/Box';
 import Grow from '@mui/material/Grow';
 import Inputbox from "../components/inputbox/inputbox.js";
 import Listbox from "../components/listbox/listbox.js";
-import Roombox from "../components/textbox/roombox.js";
-import Userbox from "../components/textbox/userbox.js";
+import Textbox from "../components/textbox/textbox.js";
 
 
 function Chatpage() {
@@ -17,7 +16,6 @@ function Chatpage() {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.name);
     const type = useSelector((state) => state.user.type);
-    const room = useSelector((state) => state.room.name);
     const token = localStorage.getItem('token');
 
     const [isWebsocket, setWebsocket] = useState(null);
@@ -42,7 +40,7 @@ function Chatpage() {
                 dispatch(setOnline(response.member))
             }
         };
-    }, [user]);
+    }, [type, user, token, dispatch]);
 
     const sendMessage = (message) => {
         if (isWebsocket.readyState === WebSocket.OPEN) {
@@ -69,7 +67,7 @@ function Chatpage() {
         } else {
             window.location = '/';
         }
-    },[token]);
+    },[token, dispatch]);
 
     return (
         <Grow in={true} timeout={500} style={{ transformOrigin: '1 1 1' }}>
@@ -87,9 +85,7 @@ function Chatpage() {
                             `,
                         },}}>
                     <Box sx={{ gridArea: 'main' }}>
-                        {
-                            room === 'main' ? <Roombox isMessage={isMessage}/> : <Userbox isMessage={isMessage}/>
-                        }
+                        <Textbox isMessage={isMessage}/> 
                     </Box>
                     <Box sx={{ gridArea: 'rightbar' }}>
                         <Listbox/>

@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (handler Handler) GetMessages(ctx *fiber.Ctx) error {
+func (handler *Handler) GetMessages(ctx *fiber.Ctx) error {
 	var messages []models.Messages
 	var request *gorm.DB
 	name := ctx.Params("name")

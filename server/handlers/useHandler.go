@@ -16,7 +16,7 @@ func CheckPassword(password, hash string) bool {
 	return err == nil
 }
 
-func (handler Handler) LoginUser(ctx *fiber.Ctx) error {
+func (handler *Handler) LoginUser(ctx *fiber.Ctx) error {
 	user := new(models.Users)
 	if err := ctx.BodyParser(user); err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).SendString(err.Error())
@@ -33,7 +33,7 @@ func (handler Handler) LoginUser(ctx *fiber.Ctx) error {
 	}
 }
 
-func (handler Handler) RegisUser(ctx *fiber.Ctx) error {
+func (handler *Handler) RegisUser(ctx *fiber.Ctx) error {
 	user := new(models.Users)
 	if err := ctx.BodyParser(user); err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).SendString(err.Error())
@@ -53,7 +53,7 @@ func (handler Handler) RegisUser(ctx *fiber.Ctx) error {
 	return ctx.SendString("Success")
 }
 
-func (handler Handler) GetUser(ctx *fiber.Ctx) error {
+func (handler *Handler) GetUser(ctx *fiber.Ctx) error {
 	var user []models.Users
 	request := handler.DB.Find(&user).Group("name")
 	if request.Error != nil {

@@ -80,7 +80,7 @@ func (socket *Handler) SendMessage(roomName string, message []byte, target strin
 func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 	defer ctx.Close()
 
-	userType := strings.Trim(ctx.Params("id"), ":")
+	userType := strings.Trim(ctx.Params("id"), ":") == "true"
 	userName := strings.Trim(ctx.Params("name"), ":")
 
 	socket.JoinRoom("main", ctx)
@@ -90,7 +90,7 @@ func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 	socket.SendMessage("main", jsonData, "main", userName)
 
 	go func() {
-		if userType == "true" {
+		if userType {
 			response := models.Users{
 				Name: userName,
 			}
@@ -131,7 +131,7 @@ func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 	}
 
 	go func() {
-		if userType == "true" {
+		if userType {
 			response := models.Users{
 				Name: userName,
 			}

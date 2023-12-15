@@ -2,6 +2,7 @@ import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import { setRoom } from '../../hooks/roomSlice.js';
 import { getUsers } from '../../api/apiFunctions.js';
+import AnnouncementIcon from '@mui/icons-material/Announcement';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
@@ -67,10 +68,12 @@ function Users({ room, user }) {
                                         selected={room === item.user}
                                         onClick={() => dispatch(setRoom(item.user))}
                                         alignItems="center" 
-                                        sx={{  my: 1, pt: 1, pb: 1, pl: 3, pr: 5.5, justifyContent: "space-between", }}>
-                                    <Typography noWrap sx={{ fontSize: 12 }} color="white">
+                                        sx={{ height: 40, my: 1, pt: 1, pb: 1, pl: 3, pr: 5.5, justifyContent: "space-between", }}>
+                                    <Typography noWrap sx={{ fontSize: 12, width: 50 }} color="white">
                                         {item.user}
                                     </Typography>
+                                    
+                                    <AnnouncementIcon sx={{ width: 18, color: "#6495ED" }}/>
                                     <Avatar sx={{ width: 12, height: 12 }} src={ item.state === "1" ? Online : Offline }/>
                                 </ListItemButton >
                             ))}
