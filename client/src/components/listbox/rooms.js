@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 function Rooms({ room }) {
 
     const dispatch = useDispatch();
-    const nums = useSelector((state) => state.nums.online);
+    const nums = useSelector((state) => state.room.online);
 
     return (
         <>

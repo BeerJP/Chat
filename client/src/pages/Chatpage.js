@@ -67,7 +67,7 @@ function Chatpage() {
         } else {
             window.location = '/';
         }
-    },[token, dispatch]);
+    }, [token, dispatch]);
 
     return (
         <Grow in={true} timeout={500} style={{ transformOrigin: '1 1 1' }}>

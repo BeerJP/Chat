@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
-import { setRoom } from '../../hooks/roomSlice.js';
+import { setRoom, setNotification } from '../../hooks/roomSlice.js';
 import { getUsers } from '../../api/apiFunctions.js';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
 import Avatar from '@mui/material/Avatar';
@@ -23,6 +23,7 @@ function Users({ room, user }) {
 
     const dispatch = useDispatch();
     const nums = useSelector((state) => state.room.online);
+    const note = useSelector((state) => state.room.notification);
     const token = useSelector((state) => state.user.token);
 
     const [isOpen, setOpen] = useState(true);
@@ -41,6 +42,11 @@ function Users({ room, user }) {
         };
         fetchData();
     }, [token, nums]);
+
+    const handleSelected = (item) => {
+        dispatch(setRoom(item));
+        dispatch(setNotification({ payload: item }));
+    };
 
     const handleClick = () => {
         setOpen(!isOpen);
@@ -66,14 +72,13 @@ function Users({ room, user }) {
                                 <ListItemButton  key={index+1} spacing={2} direction="row"
                                         disabled={item.user === user}
                                         selected={room === item.user}
-                                        onClick={() => dispatch(setRoom(item.user))}
+                                        onClick={() => handleSelected(item.user)}
                                         alignItems="center" 
                                         sx={{ height: 40, my: 1, pt: 1, pb: 1, pl: 3, pr: 5.5, justifyContent: "space-between", }}>
                                     <Typography noWrap sx={{ fontSize: 12, width: 50 }} color="white">
                                         {item.user}
                                     </Typography>
-                                    
-                                    <AnnouncementIcon sx={{ width: 18, color: "#6495ED" }}/>
+                                    <AnnouncementIcon sx={{ width: 18, color: "#6495ED", display: note[item.user] === 1 ? "" : "none" }}/>
                                     <Avatar sx={{ width: 12, height: 12 }} src={ item.state === "1" ? Online : Offline }/>
                                 </ListItemButton >
                             ))}
