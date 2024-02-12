@@ -5,12 +5,13 @@ import (
 )
 
 type Member struct {
+	Id         string
 	Name       string
 	Connection *websocket.Conn
 }
 
 type Room struct {
-	Members map[string]*Member
+	Members map[*websocket.Conn]*Member
 }
 
 type ChatWebsocket struct {

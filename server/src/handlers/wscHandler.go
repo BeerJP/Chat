@@ -17,24 +17,24 @@ func WebSocketUpgrade(ctx *fiber.Ctx) error {
 	return fiber.ErrUpgradeRequired
 }
 
-func (socket *Handler) JoinRoom(roomName string, id string, member *models.Member) {
+func (socket *Handler) JoinRoom(roomName string, ctx *websocket.Conn, member *models.Member) {
 	socket.Mu.Lock()
 	defer socket.Mu.Unlock()
 	room, exists := socket.WS.Rooms[roomName]
 	if !exists {
 		room = &models.Room{
-			Members: make(map[string]*models.Member),
+			Members: make(map[*websocket.Conn]*models.Member),
 		}
 		socket.WS.Rooms[roomName] = room
 	}
-	room.Members[id] = member
+	room.Members[ctx] = member
 }
 
-func (socket *Handler) OutRoom(roomName string, id string) {
+func (socket *Handler) OutRoom(roomName string, ctx *websocket.Conn) {
 	socket.Mu.Lock()
 	defer socket.Mu.Unlock()
 	if room, exists := socket.WS.Rooms[roomName]; exists {
-		delete(room.Members, id)
+		delete(room.Members, ctx)
 	}
 }
 
@@ -48,8 +48,10 @@ func (socket *Handler) SendMessage(roomName string, message []byte, target strin
 				_ = conn.Connection.WriteMessage(websocket.TextMessage, message)
 			}
 		} else {
-			if member, connected := room.Members[target]; connected {
-				_ = member.Connection.WriteMessage(websocket.TextMessage, message)
+			for _, conn := range room.Members {
+				if conn.Id == target {
+					_ = conn.Connection.WriteMessage(websocket.TextMessage, message)
+				}
 			}
 		}
 	}
@@ -59,13 +61,17 @@ func (socket *Handler) OnlineUser(roomName string) {
 	socket.Mu.Lock()
 	defer socket.Mu.Unlock()
 	room, exists := socket.WS.Rooms[roomName]
+	data := make(map[string]struct{})
 	var response []models.OnlineUser
 	if exists {
-		for key, conn := range room.Members {
-			response = append(response, models.OnlineUser{
-				Id:   key,
-				Name: conn.Name,
-			})
+		for _, conn := range room.Members {
+			if _, found := data[conn.Id]; !found {
+				data[conn.Id] = struct{}{}
+				response = append(response, models.OnlineUser{
+					Id:   conn.Id,
+					Name: conn.Name,
+				})
+			}
 		}
 		for _, conn := range room.Members {
 			_ = conn.Connection.WriteJSON(response)
@@ -77,7 +83,8 @@ func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 	defer ctx.Close()
 	userId := ctx.Params("user")
 	userName := ctx.Params("name")
-	socket.JoinRoom("main", userId, &models.Member{
+	socket.JoinRoom("main", ctx, &models.Member{
+		Id:         userId,
 		Name:       userName,
 		Connection: ctx,
 	})
@@ -100,6 +107,6 @@ func (socket *Handler) HandlerSocket(ctx *websocket.Conn) {
 		})
 		socket.SendMessage("main", response, target, userName)
 	}
-	socket.OutRoom("main", userId)
+	socket.OutRoom("main", ctx)
 	socket.OnlineUser("main")
 }
